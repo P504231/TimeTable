@@ -1,4 +1,3 @@
-<!-- ----- HTML ----- -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Study Planner & Progress Tracker</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- ----- CSS ----- -->
     <style>
         * {
             box-sizing: border-box;
@@ -400,7 +398,6 @@
         </div>
     </div>
 
-    <!-- ----- JavaScript ----- -->
     <script>
         const studyPlan = { 
             days: [], 
@@ -412,7 +409,8 @@
         let stopwatchInterval = null;
 
         function initializeStudyPlan() {
-            const baseTasks = [
+            // Day 1 (September 6) tasks - keep as is
+            const day1Tasks = [
                 { activity: 'Science', duration: 3600000, done: false, startTime: null, remainingTime: 3600000, timerInterval: null },
                 { activity: 'Union and state budget', duration: 1800000, done: false, startTime: null, remainingTime: 1800000, timerInterval: null },
                 { activity: 'Union and state economic survey', duration: 1800000, done: false, startTime: null, remainingTime: 1800000, timerInterval: null },
@@ -422,18 +420,38 @@
                 { activity: 'Polity', duration: 3600000, done: false, startTime: null, remainingTime: 3600000, timerInterval: null },
                 { activity: 'Economics', duration: 1800000, done: false, startTime: null, remainingTime: 1800000, timerInterval: null }
             ];
+            
+            // Days 2-7 (September 7-12) tasks - updated as requested
+            const days2to7Tasks = [
+                { activity: 'Science', duration: 7200000, done: false, startTime: null, remainingTime: 7200000, timerInterval: null },
+                { activity: 'Budget + Economic Survey', duration: 3600000, done: false, startTime: null, remainingTime: 3600000, timerInterval: null },
+                { activity: 'National and International Current Affairs', duration: 3600000, done: false, startTime: null, remainingTime: 3600000, timerInterval: null },
+                { activity: 'History', duration: 3600000, done: false, startTime: null, remainingTime: 3600000, timerInterval: null },
+                { activity: 'Bihar Special History', duration: 1800000, done: false, startTime: null, remainingTime: 1800000, timerInterval: null },
+                { activity: 'Polity', duration: 1800000, done: false, startTime: null, remainingTime: 1800000, timerInterval: null },
+                { activity: 'Geography', duration: 1800000, done: false, startTime: null, remainingTime: 1800000, timerInterval: null },
+                { activity: 'Economics', duration: 1800000, done: false, startTime: null, remainingTime: 1800000, timerInterval: null }
+            ];
+            
             studyPlan.days = [];
             const startDate = new Date(2025, 8, 6); // Start from September 6, 2025
+            
             for (let i = 0; i < 7; i++) { // 7 days for September 6 to 12
                 const dayDate = new Date(startDate);
                 dayDate.setDate(startDate.getDate() + i);
                 dayDate.setHours(0, 0, 0, 0);
                 const formattedDate = formatDate(dayDate);
+                
+                // Use day1Tasks for day 1, days2to7Tasks for days 2-7
+                const tasksForDay = i === 0 
+                    ? day1Tasks.map(task => ({ ...task })) 
+                    : days2to7Tasks.map(task => ({ ...task }));
+                
                 studyPlan.days.push({
                     dayNumber: i + 1,
                     date: dayDate,
                     formattedDate: formattedDate,
-                    tasks: baseTasks.map(task => ({ ...task }))
+                    tasks: tasksForDay
                 });
             }
         }
@@ -828,12 +846,17 @@
                             timerInterval: null
                         }))
                     }));
-                    if (days.length === 7 && days[0].date.getFullYear() === 2025 && days[0].date.getMonth() === 8 && days[0].date.getDate() === 6) {
+                    
+                    // Check if we have the correct number of days and the first day is September 6, 2025
+                    if (days.length === 7 && days[0].date.getFullYear() === 2025 && 
+                        days[0].date.getMonth() === 8 && days[0].date.getDate() === 6) {
+                        
                         studyPlan.days = days;
                         studyPlan.currentDay = parsedData.currentDay || 1;
                         studyPlan.showOverview = parsedData.showOverview || false;
                         studyPlan.activeTaskIndex = parsedData.activeTaskIndex;
                         studyPlan.activeTaskDay = parsedData.activeTaskDay;
+                        
                         if (studyPlan.activeTaskIndex !== null && studyPlan.activeTaskDay !== null) {
                             const task = studyPlan.days[studyPlan.activeTaskDay - 1].tasks[studyPlan.activeTaskIndex];
                             if (task.startTime) {
