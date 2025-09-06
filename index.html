@@ -32,18 +32,6 @@
             color: white;
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-            position: relative;
-            overflow: hidden;
-        }
-        header::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 60%);
-            transform: rotate(30deg);
         }
         h1 {
             font-size: 2.8rem;
@@ -67,7 +55,6 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
             gap: 15px;
             text-align: center;
         }
@@ -316,37 +303,17 @@
             h1 { font-size: 2.2rem; }
             .timer-display { min-width: 60px; }
             .start-btn, .stop-btn { margin-left: 5px; }
-            .current-task-container {
-                padding: 20px;
-            }
-            .current-task-container .task-label {
-                font-size: 1rem;
-            }
-            .current-task-container .animated-arrow {
-                font-size: 1.5rem;
-            }
-            .current-task-container .task-name {
-                font-size: 2rem;
-            }
-            .digital-stopwatch {
-                font-size: 1.5rem;
-            }
+            .current-task-container { padding: 20px; }
+            .current-task-container .task-label { font-size: 1rem; }
+            .current-task-container .animated-arrow { font-size: 1.5rem; }
+            .current-task-container .task-name { font-size: 2rem; }
+            .digital-stopwatch { font-size: 1.5rem; }
         }
         @media (max-width: 480px) {
-            .current-task-container .task-label {
-                font-size: 0.8rem;
-            }
-            .current-task-container .animated-arrow {
-                font-size: 1.2rem;
-            }
-            .current-task-container .task-name {
-                font-size: 1.6rem;
-            }
-            .digital-stopwatch {
-                font-size: 1.2rem;
-                min-width: 100px;
-                padding: 8px 15px;
-            }
+            .current-task-container .task-label { font-size: 0.8rem; }
+            .current-task-container .animated-arrow { font-size: 1.2rem; }
+            .current-task-container .task-name { font-size: 1.6rem; }
+            .digital-stopwatch { font-size: 1.2rem; min-width: 100px; padding: 8px 15px; }
         }
     </style>
 </head>
@@ -354,23 +321,19 @@
     <div class="container">
         <header>
             <h1>Intense Revision Plan</h1>
-            <div class="date-range">September 6 - 12, 2025</div>
+            <div class="date-range">September 7 - 12, 2025</div>
         </header>
-        
         <div class="current-task-container" id="current-task">
             <div>No task currently active</div>
         </div>
-        
         <div class="day-navigation" id="day-navigation"></div>
-        
         <div class="toggle-container">
             <button class="toggle-btn" id="toggle-view">Show Overall Performance</button>
         </div>
-        
         <div class="tables-container">
             <div class="daily-table-container">
                 <h2>Daily Study Schedule - <span id="current-day">Day 1</span></h2>
-                <div class="date-display" id="current-date">September 6, 2025</div>
+                <div class="date-display" id="current-date">September 7, 2025</div>
                 <table id="daily-table">
                     <thead>
                         <tr>
@@ -397,74 +360,69 @@
             </div>
         </div>
     </div>
-
     <script>
-        const studyPlan = { 
-            days: [], 
-            currentDay: 1, 
+        const studyPlan = {
+            days: [],
+            currentDay: 1,
             showOverview: false,
             activeTaskIndex: null,
-            activeTaskDay: null
+            activeTaskDay: null,
+            timerInterval: null
         };
-        let stopwatchInterval = null;
 
+        // Task definitions for September 7–12, 2025
+        const TASKS = [
+            { activity: 'Science', duration: 7200000 },
+            { activity: 'Budget + Economic Survey', duration: 3600000 },
+            { activity: 'National and International Current Affairs', duration: 3600000 },
+            { activity: 'History', duration: 3600000 },
+            { activity: 'Bihar Special History', duration: 1800000 },
+            { activity: 'Polity', duration: 1800000 },
+            { activity: 'Geography', duration: 1800000 },
+            { activity: 'Economics', duration: 1800000 }
+        ];
+
+        // Helper to create task objects
+        const createTask = ({ activity, duration }) => ({
+            activity,
+            duration,
+            done: false,
+            startTime: null,
+            remainingTime: duration,
+            timerInterval: null
+        });
+
+        // Initialize study plan with tasks for September 7–12, 2025
         function initializeStudyPlan() {
-            // Day 1 (September 6) tasks - keep as is
-            const day1Tasks = [
-                { activity: 'Science', duration: 3600000, done: false, startTime: null, remainingTime: 3600000, timerInterval: null },
-                { activity: 'Union and state budget', duration: 1800000, done: false, startTime: null, remainingTime: 1800000, timerInterval: null },
-                { activity: 'Union and state economic survey', duration: 1800000, done: false, startTime: null, remainingTime: 1800000, timerInterval: null },
-                { activity: 'National and International current affairs', duration: 3600000, done: false, startTime: null, remainingTime: 3600000, timerInterval: null },
-                { activity: 'Bihar Special History', duration: 3600000, done: false, startTime: null, remainingTime: 3600000, timerInterval: null },
-                { activity: 'Geography', duration: 3600000, done: false, startTime: null, remainingTime: 3600000, timerInterval: null },
-                { activity: 'Polity', duration: 3600000, done: false, startTime: null, remainingTime: 3600000, timerInterval: null },
-                { activity: 'Economics', duration: 1800000, done: false, startTime: null, remainingTime: 1800000, timerInterval: null }
-            ];
-            
-            // Days 2-7 (September 7-12) tasks - updated as requested
-            const days2to7Tasks = [
-                { activity: 'Science', duration: 7200000, done: false, startTime: null, remainingTime: 7200000, timerInterval: null },
-                { activity: 'Budget + Economic Survey', duration: 3600000, done: false, startTime: null, remainingTime: 3600000, timerInterval: null },
-                { activity: 'National and International Current Affairs', duration: 3600000, done: false, startTime: null, remainingTime: 3600000, timerInterval: null },
-                { activity: 'History', duration: 3600000, done: false, startTime: null, remainingTime: 3600000, timerInterval: null },
-                { activity: 'Bihar Special History', duration: 1800000, done: false, startTime: null, remainingTime: 1800000, timerInterval: null },
-                { activity: 'Polity', duration: 1800000, done: false, startTime: null, remainingTime: 1800000, timerInterval: null },
-                { activity: 'Geography', duration: 1800000, done: false, startTime: null, remainingTime: 1800000, timerInterval: null },
-                { activity: 'Economics', duration: 1800000, done: false, startTime: null, remainingTime: 1800000, timerInterval: null }
-            ];
-            
             studyPlan.days = [];
-            const startDate = new Date(2025, 8, 6); // Start from September 6, 2025
-            
-            for (let i = 0; i < 7; i++) { // 7 days for September 6 to 12
+            const startDate = new Date(2025, 8, 7); // September 7, 2025
+            for (let i = 0; i < 6; i++) {
                 const dayDate = new Date(startDate);
                 dayDate.setDate(startDate.getDate() + i);
                 dayDate.setHours(0, 0, 0, 0);
                 const formattedDate = formatDate(dayDate);
-                
-                // Use day1Tasks for day 1, days2to7Tasks for days 2-7
-                const tasksForDay = i === 0 
-                    ? day1Tasks.map(task => ({ ...task })) 
-                    : days2to7Tasks.map(task => ({ ...task }));
-                
+                const tasks = TASKS.map(createTask);
+
                 studyPlan.days.push({
                     dayNumber: i + 1,
                     date: dayDate,
-                    formattedDate: formattedDate,
-                    tasks: tasksForDay
+                    formattedDate,
+                    tasks
                 });
             }
         }
 
+        // Format date to "Month Day, Year"
         function formatDate(date) {
             if (!(date instanceof Date) || isNaN(date)) {
-                console.error('Invalid date in formatDate:', date);
+                console.error('Invalid date:', date);
                 return 'Unknown Date';
             }
-            const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
             return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
         }
 
+        // Format time to HH:MM:SS
         function formatTime(ms) {
             if (ms <= 0) return '00:00:00';
             const totalSeconds = Math.floor(ms / 1000);
@@ -474,6 +432,7 @@
             return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
         }
 
+        // Format time to MM:SS
         function formatTimeShort(ms) {
             if (ms <= 0) return '00:00';
             const totalSeconds = Math.floor(ms / 1000);
@@ -482,77 +441,77 @@
             return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
         }
 
+        // Check if a date is today
         function isToday(dayDate) {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
-            if (!(dayDate instanceof Date) || isNaN(dayDate)) {
-                console.error('Invalid dayDate in isToday:', dayDate);
-                return false;
-            }
-            const checkDate = new Date(dayDate.getTime());
+            if (!(dayDate instanceof Date) || isNaN(dayDate)) return false;
+            const checkDate = new Date(dayDate);
             checkDate.setHours(0, 0, 0, 0);
-            return (
-                checkDate.getFullYear() === today.getFullYear() &&
-                checkDate.getMonth() === today.getMonth() &&
-                checkDate.getDate() === today.getDate()
-            );
+            return checkDate.getTime() === today.getTime();
         }
 
+        // Update current task display
         function updateCurrentTaskDisplay() {
             const currentTaskDiv = document.getElementById('current-task');
-            
-            if (studyPlan.activeTaskIndex !== null && studyPlan.activeTaskDay !== null) {
-                const day = studyPlan.days[studyPlan.activeTaskDay - 1];
-                const task = day.tasks[studyPlan.activeTaskIndex];
-                const remaining = task.remainingTime || task.duration;
-                
+            if (studyPlan.activeTaskIndex === null || studyPlan.activeTaskDay === null) {
+                currentTaskDiv.innerHTML = '<div>No task currently active</div>';
+                if (studyPlan.timerInterval) {
+                    cancelAnimationFrame(studyPlan.timerInterval);
+                    studyPlan.timerInterval = null;
+                }
+                return;
+            }
+
+            const day = studyPlan.days[studyPlan.activeTaskDay - 1];
+            const task = day.tasks[studyPlan.activeTaskIndex];
+            const remaining = task.remainingTime || task.duration;
+
+            const update = () => {
+                const updatedRemaining = task.startTime ? task.duration - (Date.now() - task.startTime) : remaining;
+                if (updatedRemaining <= 0) {
+                    completeTask(studyPlan.activeTaskIndex);
+                    return;
+                }
+                task.remainingTime = updatedRemaining;
                 currentTaskDiv.innerHTML = `
                     <div>
                         <div><span class="task-label">Currently Studying</span></div>
                         <div><span class="animated-arrow">➔</span><span class="task-name">${task.activity}</span></div>
-                        <div><span class="digital-stopwatch">${formatTime(remaining)}</span></div>
+                        <div><span class="digital-stopwatch">${formatTime(updatedRemaining)}</span></div>
                     </div>
                 `;
-                
-                if (stopwatchInterval) clearInterval(stopwatchInterval);
-                stopwatchInterval = setInterval(() => {
-                    if (studyPlan.activeTaskIndex !== null && studyPlan.activeTaskDay !== null) {
-                        const updatedTask = studyPlan.days[studyPlan.activeTaskDay - 1].tasks[studyPlan.activeTaskIndex];
-                        const updatedRemaining = updatedTask.remainingTime || updatedTask.duration;
-                        currentTaskDiv.innerHTML = `
-                            <div>
-                                <div><span class="task-label">Currently Studying</span></div>
-                                <div><span class="animated-arrow">➔</span><span class="task-name">${updatedTask.activity}</span></div>
-                                <div><span class="digital-stopwatch">${formatTime(updatedRemaining)}</span></div>
-                            </div>
-                        `;
-                    }
-                }, 1000);
-            } else {
-                currentTaskDiv.innerHTML = `<div>No task currently active</div>`;
-                if (stopwatchInterval) clearInterval(stopwatchInterval);
+                saveToLocalStorage();
+                if (studyPlan.activeTaskIndex !== null) {
+                    studyPlan.timerInterval = requestAnimationFrame(update);
+                }
+            };
+
+            if (!studyPlan.timerInterval) {
+                studyPlan.timerInterval = requestAnimationFrame(update);
             }
         }
 
+        // Generate day navigation buttons
         function generateDayNavigation() {
             const nav = document.getElementById('day-navigation');
-            nav.innerHTML = '';
-            studyPlan.days.forEach((day, index) => {
-                const btn = document.createElement('button');
-                btn.className = `day-btn ${studyPlan.currentDay === index + 1 ? 'active' : ''}`;
-                btn.textContent = day.formattedDate.split(' ')[0] + ' ' + day.formattedDate.split(' ')[1].replace(',', '');
-                btn.onclick = () => switchDay(index + 1);
-                nav.appendChild(btn);
-            });
+            nav.innerHTML = studyPlan.days.map((day, index) => `
+                <button class="day-btn ${studyPlan.currentDay === index + 1 ? 'active' : ''}" data-day="${index + 1}">
+                    ${day.formattedDate.split(' ')[0]} ${day.formattedDate.split(' ')[1].replace(',', '')}
+                </button>
+            `).join('');
+            nav.querySelectorAll('.day-btn').forEach(btn =>
+                btn.addEventListener('click', () => switchDay(parseInt(btn.dataset.day)))
+            );
         }
 
+        // Switch to a specific day
         function switchDay(day) {
             try {
                 studyPlan.currentDay = day;
-                const buttons = document.querySelectorAll('.day-btn');
-                buttons.forEach((btn, idx) => {
-                    btn.classList.toggle('active', idx + 1 === day);
-                });
+                document.querySelectorAll('.day-btn').forEach(btn =>
+                    btn.classList.toggle('active', parseInt(btn.dataset.day) === day)
+                );
                 document.getElementById('current-day').textContent = `Day ${day}`;
                 document.getElementById('current-date').textContent = studyPlan.days[day - 1]?.formattedDate || 'Unknown Date';
                 renderDailyTable();
@@ -563,196 +522,168 @@
             }
         }
 
+        // Render daily task table
         function renderDailyTable() {
             try {
                 const tbody = document.querySelector('#daily-table tbody');
-                tbody.innerHTML = '';
-                const dayData = studyPlan.days[studyPlan.currentDay - 1];
-                if (!dayData || !dayData.tasks) {
-                    console.error('No dayData or tasks found for day:', studyPlan.currentDay);
+                const day = studyPlan.days[studyPlan.currentDay - 1];
+                if (!day || !day.tasks) {
                     tbody.innerHTML = '<tr><td colspan="3">No tasks available</td></tr>';
                     return;
                 }
-                const isCurrentDay = isToday(dayData.date);
+                const isCurrentDay = isToday(day.date);
+                tbody.innerHTML = day.tasks.map((task, index) => {
+                    const isRunning = studyPlan.activeTaskIndex === index && studyPlan.activeTaskDay === studyPlan.currentDay;
+                    const remaining = task.remainingTime || task.duration;
+                    return `
+                        <tr class="${task.done ? 'completed' : ''}">
+                            <td>${task.activity}</td>
+                            <td class="timer-cell" data-index="${index}">
+                                ${task.done ? 'Completed' : isCurrentDay ? `
+                                    <div class="timer-container">
+                                        <span class="timer-display" data-index="${index}">${formatTimeShort(remaining)}</span>
+                                        ${isRunning ? 
+                                            `<button class="stop-btn" data-index="${index}">Stop</button>` :
+                                            `<button class="start-btn" data-index="${index}" ${studyPlan.activeTaskIndex !== null && !isRunning ? 'disabled' : ''}>Start</button>`}
+                                    </div>
+                                ` : 'Not Started'}
+                            </td>
+                            <td class="done-cell">
+                                ${task.done ? `✔️ <button class="award-btn" data-index="${index}" title="Celebrate completion">🏆</button>` : ''}
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
 
-                dayData.tasks.forEach((task, i) => {
-                    const row = document.createElement('tr');
-                    if (task.done) {
-                        row.classList.add('completed');
-                    }
-                    const timerCell = document.createElement('td');
-                    timerCell.classList.add('timer-cell');
-                    timerCell.dataset.index = i;
-                    const doneCell = document.createElement('td');
-                    doneCell.classList.add('done-cell');
-                    
-                    const awardBtn = document.createElement('button');
-                    awardBtn.className = 'award-btn';
-                    awardBtn.innerHTML = '🏆';
-                    awardBtn.title = 'Celebrate completion';
-                    awardBtn.onclick = () => celebrateCompletion();
-                    
-                    if (task.done) {
-                        doneCell.innerHTML = '✔️';
-                        doneCell.appendChild(awardBtn);
-                    } else {
-                        doneCell.textContent = '';
-                    }
-                    
-                    row.innerHTML = `<td>${task.activity}</td>`;
-                    row.appendChild(timerCell);
-                    row.appendChild(doneCell);
-                    tbody.appendChild(row);
-
-                    if (task.done) {
-                        timerCell.textContent = 'Completed';
-                    } else if (isCurrentDay) {
-                        const isRunning = studyPlan.activeTaskIndex === i && studyPlan.activeTaskDay === studyPlan.currentDay;
-                        const remaining = task.remainingTime || task.duration;
-                        timerCell.innerHTML = `
-                            <div class="timer-container">
-                                <span class="timer-display" data-index="${i}">${formatTimeShort(remaining)}</span>
-                                ${isRunning ? 
-                                    `<button class="stop-btn" data-index="${i}">Stop</button>` :
-                                    `<button class="start-btn" data-index="${i}" ${studyPlan.activeTaskIndex !== null && studyPlan.activeTaskIndex !== i ? 'disabled' : ''}>Start</button>`}
-                            </div>`;
-                    } else {
-                        timerCell.textContent = 'Not Started';
-                    }
-                });
-
-                document.querySelectorAll('.start-btn').forEach(btn => {
-                    btn.onclick = () => handleStart(parseInt(btn.dataset.index));
-                });
-                document.querySelectorAll('.stop-btn').forEach(btn => {
-                    btn.onclick = () => handleStop(parseInt(btn.dataset.index));
-                });
+                tbody.querySelectorAll('.start-btn').forEach(btn =>
+                    btn.addEventListener('click', () => handleStart(parseInt(btn.dataset.index)))
+                );
+                tbody.querySelectorAll('.stop-btn').forEach(btn =>
+                    btn.addEventListener('click', () => handleStop(parseInt(btn.dataset.index)))
+                );
+                tbody.querySelectorAll('.award-btn').forEach(btn =>
+                    btn.addEventListener('click', () => celebrateCompletion())
+                );
             } catch (error) {
                 console.error('Error in renderDailyTable:', error);
                 document.querySelector('#daily-table tbody').innerHTML = '<tr><td colspan="3">Error loading tasks</td></tr>';
             }
         }
 
-        function handleStart(i) {
+        // Start a task
+        function handleStart(index) {
             try {
                 if (studyPlan.activeTaskIndex !== null) return;
                 const day = studyPlan.days[studyPlan.currentDay - 1];
-                const t = day.tasks[i];
-                if (!t.done) {
-                    if (!t.startTime) {
-                        t.startTime = Date.now();
-                        t.remainingTime = t.duration;
-                    }
-                    studyPlan.activeTaskIndex = i;
-                    studyPlan.activeTaskDay = studyPlan.currentDay;
-                    saveToLocalStorage();
-                    startTimer(i);
-                    renderDailyTable();
-                    updateCurrentTaskDisplay();
+                const task = day.tasks[index];
+                if (task.done) return;
+                if (!task.startTime) {
+                    task.startTime = Date.now();
+                    task.remainingTime = task.duration;
                 }
+                studyPlan.activeTaskIndex = index;
+                studyPlan.activeTaskDay = studyPlan.currentDay;
+                startTimer(index);
+                renderDailyTable();
+                updateCurrentTaskDisplay();
+                saveToLocalStorage();
             } catch (error) {
                 console.error('Error in handleStart:', error);
             }
         }
 
-        function handleStop(i) {
+        // Stop a task
+        function handleStop(index) {
             try {
                 const day = studyPlan.days[studyPlan.activeTaskDay - 1];
-                const t = day.tasks[i];
-                if (t.timerInterval) {
-                    clearInterval(t.timerInterval);
-                    t.timerInterval = null;
+                const task = day.tasks[index];
+                if (task.timerInterval) {
+                    clearInterval(task.timerInterval);
+                    task.timerInterval = null;
                 }
-                t.remainingTime = t.duration - (Date.now() - t.startTime);
-                if (t.remainingTime <= 0) {
-                    completeTask(i);
+                task.remainingTime = task.duration - (Date.now() - task.startTime);
+                if (task.remainingTime <= 0) {
+                    completeTask(index);
                 } else {
                     studyPlan.activeTaskIndex = null;
                     studyPlan.activeTaskDay = null;
-                    saveToLocalStorage();
                     renderDailyTable();
                     updateCurrentTaskDisplay();
+                    saveToLocalStorage();
                 }
             } catch (error) {
                 console.error('Error in handleStop:', error);
             }
         }
 
-        function startTimer(i) {
+        // Start task timer
+        function startTimer(index) {
             try {
                 const day = studyPlan.days[studyPlan.activeTaskDay - 1];
-                const t = day.tasks[i];
-                let r = t.remainingTime || t.duration;
-                updateTimerUI(i, r);
-                updateCurrentTaskDisplay();
-                const int = setInterval(() => {
-                    r = t.duration - (Date.now() - t.startTime);
-                    if (r <= 0) {
-                        clearInterval(int);
-                        t.timerInterval = null;
-                        completeTask(i);
+                const task = day.tasks[index];
+                if (task.timerInterval) clearInterval(task.timerInterval);
+                task.timerInterval = setInterval(() => {
+                    const remaining = task.duration - (Date.now() - task.startTime);
+                    if (remaining <= 0) {
+                        clearInterval(task.timerInterval);
+                        task.timerInterval = null;
+                        completeTask(index);
                     } else {
-                        t.remainingTime = r;
-                        updateTimerUI(i, r);
-                        updateCurrentTaskDisplay();
+                        task.remainingTime = remaining;
+                        updateTimerUI(index, remaining);
                         saveToLocalStorage();
                     }
                 }, 1000);
-                t.timerInterval = int;
             } catch (error) {
                 console.error('Error in startTimer:', error);
             }
         }
 
-        function updateTimerUI(i, r) {
+        // Update timer UI
+        function updateTimerUI(index, remaining) {
             try {
                 if (studyPlan.currentDay === studyPlan.activeTaskDay) {
-                    const disp = document.querySelector(`.timer-display[data-index="${i}"]`);
-                    if (disp) {
-                        disp.textContent = formatTimeShort(r);
-                    }
+                    const display = document.querySelector(`.timer-display[data-index="${index}"]`);
+                    if (display) display.textContent = formatTimeShort(remaining);
                 }
             } catch (error) {
                 console.error('Error in updateTimerUI:', error);
             }
         }
 
-        function completeTask(i) {
+        // Complete a task
+        function completeTask(index) {
             try {
-                const d = studyPlan.days[studyPlan.activeTaskDay - 1];
-                const t = d.tasks[i];
-                if (t.timerInterval) {
-                    clearInterval(t.timerInterval);
-                    t.timerInterval = null;
+                const day = studyPlan.days[studyPlan.activeTaskDay - 1];
+                const task = day.tasks[index];
+                if (task.timerInterval) {
+                    clearInterval(task.timerInterval);
+                    task.timerInterval = null;
                 }
-                t.done = true;
-                t.startTime = null;
-                t.remainingTime = t.duration;
+                task.done = true;
+                task.startTime = null;
+                task.remainingTime = task.duration;
                 studyPlan.activeTaskIndex = null;
                 studyPlan.activeTaskDay = null;
-                saveToLocalStorage();
-                if (studyPlan.currentDay === d.dayNumber) {
-                    const tc = document.querySelector(`.timer-cell[data-index="${i}"]`);
-                    if (tc) tc.textContent = 'Completed';
-                    renderDailyTable();
+                if (studyPlan.timerInterval) {
+                    cancelAnimationFrame(studyPlan.timerInterval);
+                    studyPlan.timerInterval = null;
                 }
+                renderDailyTable();
                 updateCurrentTaskDisplay();
+                saveToLocalStorage();
             } catch (error) {
                 console.error('Error in completeTask:', error);
             }
         }
 
+        // Show celebration animation
         function celebrateCompletion() {
             const celebration = document.createElement('div');
             celebration.className = 'celebration';
-            
-            const message = document.createElement('div');
-            message.className = 'celebration-message';
-            message.textContent = 'Well Done 👏';
-            celebration.appendChild(message);
-            
+            celebration.innerHTML = '<div class="celebration-message">Well Done 👏</div>';
             document.body.appendChild(celebration);
-            
+
             for (let i = 0; i < 50; i++) {
                 setTimeout(() => {
                     const firework = document.createElement('div');
@@ -763,64 +694,60 @@
                     firework.style.width = (Math.random() * 20 + 10) + 'px';
                     firework.style.height = firework.style.width;
                     celebration.appendChild(firework);
-                    
-                    setTimeout(() => {
-                        firework.remove();
-                    }, 1000);
+                    setTimeout(() => firework.remove(), 1000);
                 }, i * 50);
             }
-            
-            setTimeout(() => {
-                celebration.remove();
-            }, 2000);
+
+            setTimeout(() => celebration.remove(), 2000);
         }
 
+        // Render overview table
         function renderOverviewTable() {
             try {
                 const tbody = document.querySelector('#overview-table tbody');
-                tbody.innerHTML = '';
-                studyPlan.days.forEach(day => {
-                    const comp = day.tasks.filter(t => t.done).length;
-                    const tot = day.tasks.length;
-                    const per = Math.round((comp / tot) * 100);
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${day.formattedDate}</td>
-                        <td>${comp}/${tot}</td>
-                        <td><div class="progress-bar"><div class="progress-fill" style="width:${per}%"></div></div></td>
+                tbody.innerHTML = studyPlan.days.map(day => {
+                    const completed = day.tasks.filter(t => t.done).length;
+                    const total = day.tasks.length;
+                    const percentage = Math.round((completed / total) * 100);
+                    return `
+                        <tr>
+                            <td>${day.formattedDate}</td>
+                            <td>${completed}/${total}</td>
+                            <td><div class="progress-bar"><div class="progress-fill" style="width:${percentage}%"></div></div></td>
+                        </tr>
                     `;
-                    tbody.appendChild(row);
-                });
+                }).join('');
             } catch (error) {
                 console.error('Error in renderOverviewTable:', error);
             }
         }
 
+        // Toggle between daily and overview views
         function toggleView() {
             try {
                 studyPlan.showOverview = !studyPlan.showOverview;
-                const show = studyPlan.showOverview;
-                document.querySelector('.daily-table-container').style.display = show ? 'none' : 'block';
-                document.getElementById('overview-container').style.display = show ? 'block' : 'none';
-                document.getElementById('toggle-view').textContent = show ? 'Show Daily Schedule' : 'Show Overall Performance';
-                if (show) renderOverviewTable();
+                document.querySelector('.daily-table-container').style.display = studyPlan.showOverview ? 'none' : 'block';
+                document.getElementById('overview-container').style.display = studyPlan.showOverview ? 'block' : 'none';
+                document.getElementById('toggle-view').textContent = studyPlan.showOverview ? 'Show Daily Schedule' : 'Show Overall Performance';
+                if (studyPlan.showOverview) renderOverviewTable();
                 saveToLocalStorage();
             } catch (error) {
                 console.error('Error in toggleView:', error);
             }
         }
 
+        // Save study plan to local storage
         function saveToLocalStorage() {
             try {
                 const serializablePlan = {
                     ...studyPlan,
+                    timerInterval: null,
                     days: studyPlan.days.map(day => ({
                         ...day,
                         date: day.date.toISOString(),
                         tasks: day.tasks.map(task => ({
                             ...task,
-                            startTime: task.startTime,
-                            remainingTime: task.remainingTime,
+                            startTime: task.startTime ? task.startTime.toISOString() : null,
                             timerInterval: null
                         }))
                     }))
@@ -831,71 +758,116 @@
             }
         }
 
+        // Load study plan from local storage with improved validation
         function loadFromLocalStorage() {
             try {
                 const savedData = localStorage.getItem('studyPlan');
-                if (savedData) {
-                    const parsedData = JSON.parse(savedData);
-                    const days = parsedData.days.map(day => ({
-                        ...day,
-                        date: new Date(day.date),
-                        tasks: day.tasks.map(task => ({
-                            ...task,
-                            startTime: task.startTime ? new Date(task.startTime) : null,
-                            remainingTime: task.remainingTime || task.duration,
-                            timerInterval: null
-                        }))
-                    }));
-                    
-                    // Check if we have the correct number of days and the first day is September 6, 2025
-                    if (days.length === 7 && days[0].date.getFullYear() === 2025 && 
-                        days[0].date.getMonth() === 8 && days[0].date.getDate() === 6) {
-                        
-                        studyPlan.days = days;
-                        studyPlan.currentDay = parsedData.currentDay || 1;
-                        studyPlan.showOverview = parsedData.showOverview || false;
-                        studyPlan.activeTaskIndex = parsedData.activeTaskIndex;
-                        studyPlan.activeTaskDay = parsedData.activeTaskDay;
-                        
-                        if (studyPlan.activeTaskIndex !== null && studyPlan.activeTaskDay !== null) {
-                            const task = studyPlan.days[studyPlan.activeTaskDay - 1].tasks[studyPlan.activeTaskIndex];
-                            if (task.startTime) {
-                                startTimer(studyPlan.activeTaskIndex);
-                            } else {
-                                studyPlan.activeTaskIndex = null;
-                                studyPlan.activeTaskDay = null;
-                            }
-                        }
-                    } else {
-                        console.warn('Invalid data in localStorage, resetting study plan');
+                if (!savedData) {
+                    console.log('No localStorage data found, initializing new study plan');
+                    initializeStudyPlan();
+                    return;
+                }
+
+                const parsedData = JSON.parse(savedData);
+                const expectedStartDate = new Date(2025, 8, 7);
+                expectedStartDate.setHours(0, 0, 0, 0);
+
+                // Validate structure and date range
+                if (!parsedData.days) {
+                    console.warn('Invalid localStorage: Missing days array');
+                    localStorage.removeItem('studyPlan');
+                    initializeStudyPlan();
+                    return;
+                }
+                if (parsedData.days.length !== 6) {
+                    console.warn(`Invalid localStorage: Expected 6 days, found ${parsedData.days.length}`);
+                    localStorage.removeItem('studyPlan');
+                    initializeStudyPlan();
+                    return;
+                }
+                if (!parsedData.days[0].date) {
+                    console.warn('Invalid localStorage: Missing date for first day');
+                    localStorage.removeItem('studyPlan');
+                    initializeStudyPlan();
+                    return;
+                }
+
+                const firstDayDate = new Date(parsedData.days[0].date);
+                firstDayDate.setHours(0, 0, 0, 0);
+                if (firstDayDate.getTime() !== expectedStartDate.getTime()) {
+                    console.warn(`Invalid localStorage: Expected start date September 7, 2025, found ${formatDate(firstDayDate)}`);
+                    localStorage.removeItem('studyPlan');
+                    initializeStudyPlan();
+                    return;
+                }
+
+                // Validate task structure for each day
+                const expectedTaskCount = TASKS.length;
+                const expectedTaskNames = TASKS.map(t => t.activity);
+                for (let i = 0; i < parsedData.days.length; i++) {
+                    const day = parsedData.days[i];
+                    if (!day.tasks || day.tasks.length !== expectedTaskCount) {
+                        console.warn(`Invalid localStorage: Day ${i + 1} has ${day.tasks ? day.tasks.length : 0} tasks, expected ${expectedTaskCount}`);
                         localStorage.removeItem('studyPlan');
                         initializeStudyPlan();
+                        return;
                     }
-                } else {
-                    initializeStudyPlan();
+                    const taskNames = day.tasks.map(t => t.activity);
+                    if (!expectedTaskNames.every((name, idx) => name === taskNames[idx])) {
+                        console.warn(`Invalid localStorage: Day ${i + 1} tasks do not match expected activities`);
+                        localStorage.removeItem('studyPlan');
+                        initializeStudyPlan();
+                        return;
+                    }
                 }
+
+                // Data is valid, load it
+                studyPlan.days = parsedData.days.map(day => ({
+                    ...day,
+                    date: new Date(day.date),
+                    tasks: day.tasks.map(task => ({
+                        ...task,
+                        startTime: task.startTime ? new Date(task.startTime) : null,
+                        remainingTime: task.remainingTime || task.duration,
+                        timerInterval: null
+                    }))
+                }));
+                studyPlan.currentDay = parsedData.currentDay || 1;
+                studyPlan.showOverview = parsedData.showOverview || false;
+                studyPlan.activeTaskIndex = parsedData.activeTaskIndex;
+                studyPlan.activeTaskDay = parsedData.activeTaskDay;
+
+                // Validate and resume active task
+                if (studyPlan.activeTaskIndex !== null && studyPlan.activeTaskDay !== null) {
+                    const task = studyPlan.days[studyPlan.activeTaskDay - 1]?.tasks[studyPlan.activeTaskIndex];
+                    if (task && task.startTime && task.remainingTime > 0 && !task.done) {
+                        startTimer(studyPlan.activeTaskIndex);
+                    } else {
+                        console.warn('Invalid active task in localStorage, clearing active task');
+                        studyPlan.activeTaskIndex = null;
+                        studyPlan.activeTaskDay = null;
+                    }
+                }
+
+                console.log('Successfully loaded study plan from localStorage');
             } catch (error) {
-                console.error('Error in loadFromLocalStorage:', error);
+                console.error('Error in loadFromLocalStorage:', error.message, error.stack);
                 localStorage.removeItem('studyPlan');
                 initializeStudyPlan();
             }
         }
 
+        // Initialize the app
         function initApp() {
             try {
                 loadFromLocalStorage();
-                if (studyPlan.days.length === 0) {
-                    initializeStudyPlan();
-                }
                 generateDayNavigation();
                 switchDay(studyPlan.currentDay);
-                if (studyPlan.showOverview) {
-                    toggleView();
-                }
+                if (studyPlan.showOverview) toggleView();
                 document.getElementById('toggle-view').addEventListener('click', toggleView);
                 updateCurrentTaskDisplay();
             } catch (error) {
-                console.error('Error in initApp:', error);
+                console.error('Error in initApp:', error.message, error.stack);
                 document.querySelector('#daily-table tbody').innerHTML = '<tr><td colspan="3">Error initializing app</td></tr>';
             }
         }
