@@ -321,7 +321,7 @@
     <div class="container">
         <header>
             <h1>Intense Revision Plan</h1>
-            <div class="date-range">September 7 - 12, 2025</div>
+            <div class="date-range">September 14 - 17, 2025</div>
         </header>
         <div class="current-task-container" id="current-task">
             <div>No task currently active</div>
@@ -333,7 +333,7 @@
         <div class="tables-container">
             <div class="daily-table-container">
                 <h2>Daily Study Schedule - <span id="current-day">Day 1</span></h2>
-                <div class="date-display" id="current-date">September 7, 2025</div>
+                <div class="date-display" id="current-date">September 14, 2025</div>
                 <table id="daily-table">
                     <thead>
                         <tr>
@@ -370,16 +370,15 @@
             timerInterval: null
         };
 
-        // Task definitions for September 7–12, 2025
+        // Task definitions for September 14–17, 2025
         const TASKS = [
-            { activity: 'Science', duration: 7200000 },
-            { activity: 'Budget + Economic Survey', duration: 3600000 },
-            { activity: 'National and International Current Affairs', duration: 3600000 },
-            { activity: 'History', duration: 3600000 },
-            { activity: 'Bihar Special History', duration: 1800000 },
-            { activity: 'Polity', duration: 1800000 },
-            { activity: 'Geography', duration: 1800000 },
-            { activity: 'Economics', duration: 1800000 }
+            { activity: 'Revise English Grammar + Aptitude', duration: 1800000 }, // 30 minutes
+            { activity: 'Full Tier-1 Test on Testbook + Analysis', duration: 5400000 }, // 1.5 hours
+            { activity: 'Full Tier-2 Test on Testbook + Analysis', duration: 5400000 }, // 1.5 hours
+            { activity: 'Full Tier-3 Test on Testbook + Analysis', duration: 5400000 }, // 1.5 hours
+            { activity: 'Full Tier-4 Test on Testbook + Analysis', duration: 5400000 }, // 1.5 hours
+            { activity: 'Current Affairs', duration: 3600000 }, // 1 hour
+            { activity: 'Full Day Analysis TakeAway Points', duration: 1800000 } // 30 minutes
         ];
 
         // Helper to create task objects
@@ -388,15 +387,17 @@
             duration,
             done: false,
             startTime: null,
+            elapsedTime: 0,
             remainingTime: duration,
-            timerInterval: null
+            timerInterval: null,
+            isPaused: false
         });
 
-        // Initialize study plan with tasks for September 7–12, 2025
+        // Initialize study plan with tasks for September 14–17, 2025
         function initializeStudyPlan() {
             studyPlan.days = [];
-            const startDate = new Date(2025, 8, 7); // September 7, 2025
-            for (let i = 0; i < 6; i++) {
+            const startDate = new Date(2025, 8, 14); // September 14, 2025
+            for (let i = 0; i < 4; i++) {
                 const dayDate = new Date(startDate);
                 dayDate.setDate(startDate.getDate() + i);
                 dayDate.setHours(0, 0, 0, 0);
@@ -465,30 +466,34 @@
 
             const day = studyPlan.days[studyPlan.activeTaskDay - 1];
             const task = day.tasks[studyPlan.activeTaskIndex];
-            const remaining = task.remainingTime || task.duration;
+            const remaining = task.remainingTime;
 
             const update = () => {
-                const updatedRemaining = task.startTime ? task.duration - (Date.now() - task.startTime) : remaining;
-                if (updatedRemaining <= 0) {
-                    completeTask(studyPlan.activeTaskIndex);
-                    return;
+                if (!task.isPaused) {
+                    const updatedRemaining = task.duration - (task.elapsedTime + (Date.now() - task.startTime));
+                    if (updatedRemaining <= 0) {
+                        completeTask(studyPlan.activeTaskIndex);
+                        return;
+                    }
+                    task.remainingTime = updatedRemaining;
                 }
-                task.remainingTime = updatedRemaining;
                 currentTaskDiv.innerHTML = `
                     <div>
                         <div><span class="task-label">Currently Studying</span></div>
                         <div><span class="animated-arrow">➔</span><span class="task-name">${task.activity}</span></div>
-                        <div><span class="digital-stopwatch">${formatTime(updatedRemaining)}</span></div>
+                        <div><span class="digital-stopwatch">${formatTime(task.remainingTime)}</span></div>
                     </div>
                 `;
                 saveToLocalStorage();
-                if (studyPlan.activeTaskIndex !== null) {
+                if (studyPlan.activeTaskIndex !== null && !task.isPaused) {
                     studyPlan.timerInterval = requestAnimationFrame(update);
                 }
             };
 
-            if (!studyPlan.timerInterval) {
+            if (!studyPlan.timerInterval && !task.isPaused) {
                 studyPlan.timerInterval = requestAnimationFrame(update);
+            } else if (task.isPaused) {
+                update(); // Update display without starting animation
             }
         }
 
@@ -533,18 +538,17 @@
                 }
                 const isCurrentDay = isToday(day.date);
                 tbody.innerHTML = day.tasks.map((task, index) => {
-                    const isRunning = studyPlan.activeTaskIndex === index && studyPlan.activeTaskDay === studyPlan.currentDay;
-                    const remaining = task.remainingTime || task.duration;
+                    const isRunning = studyPlan.activeTaskIndex === index && studyPlan.activeTaskDay === studyPlan.currentDay && !task.isPaused;
                     return `
                         <tr class="${task.done ? 'completed' : ''}">
                             <td>${task.activity}</td>
                             <td class="timer-cell" data-index="${index}">
                                 ${task.done ? 'Completed' : isCurrentDay ? `
                                     <div class="timer-container">
-                                        <span class="timer-display" data-index="${index}">${formatTimeShort(remaining)}</span>
+                                        <span class="timer-display" data-index="${index}">${formatTimeShort(task.remainingTime)}</span>
                                         ${isRunning ? 
                                             `<button class="stop-btn" data-index="${index}">Stop</button>` :
-                                            `<button class="start-btn" data-index="${index}" ${studyPlan.activeTaskIndex !== null && !isRunning ? 'disabled' : ''}>Start</button>`}
+                                            `<button class="start-btn" data-index="${index}" ${studyPlan.activeTaskIndex !== null && !isRunning && studyPlan.activeTaskDay !== studyPlan.currentDay ? 'disabled' : ''}>${task.isPaused ? 'Resume' : 'Start'}</button>`}
                                     </div>
                                 ` : 'Not Started'}
                             </td>
@@ -573,13 +577,16 @@
         // Start a task
         function handleStart(index) {
             try {
-                if (studyPlan.activeTaskIndex !== null) return;
+                if (studyPlan.activeTaskIndex !== null && studyPlan.activeTaskDay !== studyPlan.currentDay) return;
                 const day = studyPlan.days[studyPlan.currentDay - 1];
                 const task = day.tasks[index];
                 if (task.done) return;
                 if (!task.startTime) {
                     task.startTime = Date.now();
                     task.remainingTime = task.duration;
+                } else if (task.isPaused) {
+                    task.startTime = Date.now();
+                    task.isPaused = false;
                 }
                 studyPlan.activeTaskIndex = index;
                 studyPlan.activeTaskDay = studyPlan.currentDay;
@@ -601,12 +608,13 @@
                     clearInterval(task.timerInterval);
                     task.timerInterval = null;
                 }
-                task.remainingTime = task.duration - (Date.now() - task.startTime);
+                task.elapsedTime += Date.now() - task.startTime;
+                task.remainingTime = task.duration - task.elapsedTime;
+                task.isPaused = true;
                 if (task.remainingTime <= 0) {
                     completeTask(index);
                 } else {
-                    studyPlan.activeTaskIndex = null;
-                    studyPlan.activeTaskDay = null;
+                    studyPlan.timerInterval = null;
                     renderDailyTable();
                     updateCurrentTaskDisplay();
                     saveToLocalStorage();
@@ -623,7 +631,8 @@
                 const task = day.tasks[index];
                 if (task.timerInterval) clearInterval(task.timerInterval);
                 task.timerInterval = setInterval(() => {
-                    const remaining = task.duration - (Date.now() - task.startTime);
+                    const elapsed = task.elapsedTime + (Date.now() - task.startTime);
+                    const remaining = task.duration - elapsed;
                     if (remaining <= 0) {
                         clearInterval(task.timerInterval);
                         task.timerInterval = null;
@@ -662,7 +671,9 @@
                 }
                 task.done = true;
                 task.startTime = null;
+                task.elapsedTime = 0;
                 task.remainingTime = task.duration;
+                task.isPaused = false;
                 studyPlan.activeTaskIndex = null;
                 studyPlan.activeTaskDay = null;
                 if (studyPlan.timerInterval) {
@@ -769,7 +780,7 @@
                 }
 
                 const parsedData = JSON.parse(savedData);
-                const expectedStartDate = new Date(2025, 8, 7);
+                const expectedStartDate = new Date(2025, 8, 14);
                 expectedStartDate.setHours(0, 0, 0, 0);
 
                 // Validate structure and date range
@@ -779,8 +790,8 @@
                     initializeStudyPlan();
                     return;
                 }
-                if (parsedData.days.length !== 6) {
-                    console.warn(`Invalid localStorage: Expected 6 days, found ${parsedData.days.length}`);
+                if (parsedData.days.length !== 4) {
+                    console.warn(`Invalid localStorage: Expected 4 days, found ${parsedData.days.length}`);
                     localStorage.removeItem('studyPlan');
                     initializeStudyPlan();
                     return;
@@ -795,7 +806,7 @@
                 const firstDayDate = new Date(parsedData.days[0].date);
                 firstDayDate.setHours(0, 0, 0, 0);
                 if (firstDayDate.getTime() !== expectedStartDate.getTime()) {
-                    console.warn(`Invalid localStorage: Expected start date September 7, 2025, found ${formatDate(firstDayDate)}`);
+                    console.warn(`Invalid localStorage: Expected start date September 14, 2025, found ${formatDate(firstDayDate)}`);
                     localStorage.removeItem('studyPlan');
                     initializeStudyPlan();
                     return;
@@ -840,7 +851,7 @@
                 // Validate and resume active task
                 if (studyPlan.activeTaskIndex !== null && studyPlan.activeTaskDay !== null) {
                     const task = studyPlan.days[studyPlan.activeTaskDay - 1]?.tasks[studyPlan.activeTaskIndex];
-                    if (task && task.startTime && task.remainingTime > 0 && !task.done) {
+                    if (task && task.startTime && task.remainingTime > 0 && !task.done && !task.isPaused) {
                         startTimer(studyPlan.activeTaskIndex);
                     } else {
                         console.warn('Invalid active task in localStorage, clearing active task');
