@@ -7,321 +7,323 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #e4efe9 100%);
-            color: #2c3e50;
-            line-height: 1.6;
-            padding: 20px;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding: 25px;
-            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-            color: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-        }
-        h1 {
-            font-size: 2.8rem;
-            margin-bottom: 15px;
-            letter-spacing: 0.5px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-        }
-        .date-range {
-            font-size: 1.3rem;
-            font-weight: 500;
-            opacity: 0.9;
-        }
-        .current-task-container {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            margin-bottom: 25px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            font-weight: 500;
-            color: #2c3e50;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-            text-align: center;
-        }
-        .current-task-container .task-label {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #FF0000;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .current-task-container .animated-arrow {
-            font-size: 1.8rem;
-            color: #8B0000;
-            animation: pulse 1.5s infinite;
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.2); opacity: 0.7; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        .current-task-container .task-name {
-            font-size: 2.4rem;
-            font-weight: bold;
-            color: #FF0000;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
-        }
-        .digital-stopwatch {
-            font-family: 'Courier New', monospace;
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #00008B;
-            background: #CF9FFF;
-            padding: 10px 20px;
-            border-radius: 10px;
-            border: 2px solid #e9ecef;
-            min-width: 140px;
-            text-align: center;
-            animation: blink 1s step-end infinite;
-        }
-        @keyframes blink {
-            50% { opacity: 0.7; }
-        }
-        .day-navigation {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            margin-bottom: 25px;
-            flex-wrap: wrap;
-        }
-        .day-btn {
-            padding: 12px 22px;
-            background: #6a11cb;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 600;
-            box-shadow: 0 4px 8px rgba(106, 17, 203, 0.3);
-        }
-        .day-btn:hover {
-            background: #2575fc;
-            transform: translateY(-3px);
-            box-shadow: 0 6px 12px rgba(37, 117, 252, 0.4);
-        }
-        .day-btn.active {
-            background: #2575fc;
-            box-shadow: 0 0 0 3px rgba(37, 117, 252, 0.3);
-        }
-        .tables-container {
-            display: flex;
-            gap: 25px;
-            flex-wrap: wrap;
-        }
-        .daily-table-container { flex: 2; min-width: 300px; }
-        .overview-table-container { flex: 1; min-width: 300px; }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 25px;
-            background: white;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-        }
-        th, td {
-            padding: 15px 18px;
-            text-align: left;
-            border-bottom: 1px solid #e0e0e0;
-        }
-        th {
-            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-            color: white;
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
-        tr:nth-child(even) { background-color: #f8f9fa; }
-        tr:hover { background-color: #f1f3f5; }
-        tr.completed {
-            background-color: #d4edda !important;
-            color: #155724;
-        }
-        .start-btn, .stop-btn {
-            padding: 8px 16px;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 0.9rem;
-            margin-left: 10px;
-            font-weight: 600;
-        }
-        .start-btn {
-            background: #2575fc;
-        }
-        .start-btn:hover {
-            background: #6a11cb;
-        }
-        .start-btn:disabled {
-            background: #cccccc;
-            cursor: not-allowed;
-        }
-        .stop-btn {
-            background: #dc3545;
-        }
-        .stop-btn:hover {
-            background: #b02a37;
-        }
-        .timer-display {
-            font-weight: bold;
-            color: #2575fc;
-            display: inline-block;
-            min-width: 80px;
-            text-align: right;
-        }
-        .timer-container {
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-        }
-        .done-cell {
-            text-align: center;
-            font-size: 1.2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        .award-btn {
-            background: #ffc107;
-            color: #212529;
-            border: none;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1rem;
-        }
-        .award-btn:hover {
-            background: #e0a800;
-            transform: scale(1.1);
-        }
-        .toggle-container {
-            display: flex;
-            justify-content: center;
-            margin: 25px 0;
-            gap: 15px;
-        }
-        .toggle-btn {
-            padding: 12px 25px;
-            background: #6a11cb;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 8px rgba(106, 17, 203, 0.3);
-        }
-        .toggle-btn:hover {
-            background: #2575fc;
-            transform: translateY(-3px);
-            box-shadow: 0 6px 12px rgba(37, 117, 252, 0.4);
-        }
-        .date-display {
-            margin: 10px 0;
-            font-size: 1.2rem;
-            font-weight: 500;
-            color: #2c3e50;
-        }
-        .progress-bar {
-            width: 100%;
-            height: 20px;
-            background: #e9ecef;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #6a11cb, #2575fc);
-            transition: width 0.3s ease;
-        }
-        .celebration {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            z-index: 1000;
-            pointer-events: none;
-        }
-        .celebration-message {
-            font-size: 3rem;
-            font-weight: bold;
-            color: #2575fc;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-            margin-bottom: 20px;
-            animation: zoom 2s ease-out;
-        }
-        @keyframes zoom {
-            0% { transform: scale(0.5); opacity: 0; }
-            50% { transform: scale(1.2); opacity: 1; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        .firework {
-            position: absolute;
-            border-radius: 50%;
-            animation: explode 1s ease-out forwards;
-        }
-        @keyframes explode {
-            0% { transform: scale(0); opacity: 1; }
-            100% { transform: scale(2); opacity: 0; }
-        }
-        @media (max-width: 768px) {
-            .tables-container { flex-direction: column; }
-            .day-navigation { justify-content: flex-start; }
-            h1 { font-size: 2.2rem; }
-            .timer-display { min-width: 60px; }
-            .start-btn, .stop-btn { margin-left: 5px; }
-            .current-task-container { padding: 20px; }
-            .current-task-container .task-label { font-size: 1rem; }
-            .current-task-container .animated-arrow { font-size: 1.5rem; }
-            .current-task-container .task-name { font-size: 2rem; }
-            .digital-stopwatch { font-size: 1.5rem; }
-        }
-        @media (max-width: 480px) {
-            .current-task-container .task-label { font-size: 0.8rem; }
-            .current-task-container .animated-arrow { font-size: 1.2rem; }
-            .current-task-container .task-name { font-size: 1.6rem; }
-            .digital-stopwatch { font-size: 1.2rem; min-width: 100px; padding: 8px 15px; }
-        }
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+body {
+    background: linear-gradient(135deg, #81c784 0%, #2e7d32 100%);
+    color: #263238;
+    line-height: 1.6;
+    padding: 20px;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 25px;
+    background: linear-gradient(135deg, #388e3c 0%, #2e7d32 100%);
+    color: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(46, 125, 50, 0.15);
+}
+h1 {
+    font-size: 2.8rem;
+    margin-bottom: 15px;
+    letter-spacing: 0.5px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+.date-range {
+    font-size: 1.3rem;
+    font-weight: 500;
+    opacity: 0.9;
+}
+.current-task-container {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    font-weight: 500;
+    color: #2c3e50;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    text-align: center;
+}
+.current-task-container .task-label {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #FF0000;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.current-task-container .animated-arrow {
+    font-size: 1.8rem;
+    color: #8B0000;
+    animation: pulse 1.5s infinite;
+}
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.2); opacity: 0.7; }
+    100% { transform: scale(1); opacity: 1; }
+}
+.current-task-container .task-name {
+    font-size: 2.4rem;
+    font-weight: bold;
+    color: #FF0000;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+.digital-stopwatch {
+    font-family: 'Courier New', monospace;
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #1b5e20;
+    background: #c8e6c9;
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: 2px solid #e9ecef;
+    min-width: 140px;
+    text-align: center;
+    animation: blink 1s step-end infinite;
+}
+@keyframes blink {
+    50% { opacity: 0.7; }
+}
+.day-navigation {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+}
+.day-btn {
+    padding: 12px 22px;
+    background: #388e3c;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    box-shadow: 0 4px 8px rgba(46, 125, 50, 0.2);
+}
+.day-btn:hover {
+    background: #2e7d32;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(46, 125, 50, 0.3);
+}
+.day-btn.active {
+    background: #81c784;
+    color: #1b5e20;
+    box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.15);
+}
+.tables-container {
+    display: flex;
+    gap: 25px;
+    flex-wrap: wrap;
+}
+.daily-table-container { flex: 2; min-width: 300px; }
+.overview-table-container { flex: 1; min-width: 300px; }
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 25px;
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+th, td {
+    padding: 15px 18px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+}
+th {
+    background: linear-gradient(135deg, #388e3c 0%, #2e7d32 100%);
+    color: white;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+tr:nth-child(even) { background-color: #f3fbf5; }
+tr:hover { background-color: #e8f5e9; }
+tr.completed {
+    background-color: #d0f8ce !important;
+    color: #155724;
+}
+.start-btn, .stop-btn {
+    padding: 8px 16px;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    margin-left: 10px;
+    font-weight: 600;
+}
+.start-btn {
+    background: #388e3c;
+}
+.start-btn:hover {
+    background: #2e7d32;
+}
+.start-btn:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+}
+.stop-btn {
+    background: #d32f2f;
+}
+.stop-btn:hover {
+    background: #b71c1c;
+}
+.timer-display {
+    font-weight: bold;
+    color: #388e3c;
+    display: inline-block;
+    min-width: 80px;
+    text-align: right;
+}
+.timer-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+.done-cell {
+    text-align: center;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+.award-btn {
+    background: #81c784;
+    color: #1b5e20;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+}
+.award-btn:hover {
+    background: #388e3c;
+    color: white;
+    transform: scale(1.1);
+}
+.toggle-container {
+    display: flex;
+    justify-content: center;
+    margin: 25px 0;
+    gap: 15px;
+}
+.toggle-btn {
+    padding: 12px 25px;
+    background: #388e3c;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(46, 125, 50, 0.2);
+}
+.toggle-btn:hover {
+    background: #2e7d32;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(46, 125, 50, 0.3);
+}
+.date-display {
+    margin: 10px 0;
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: #2c3e50;
+}
+.progress-bar {
+    width: 100%;
+    height: 20px;
+    background: #c8e6c9;
+    border-radius: 10px;
+    overflow: hidden;
+}
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #388e3c, #81c784);
+    transition: width 0.3s ease;
+}
+.celebration {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    z-index: 1000;
+    pointer-events: none;
+}
+.celebration-message {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #388e3c;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    margin-bottom: 20px;
+    animation: zoom 2s ease-out;
+}
+@keyframes zoom {
+    0% { transform: scale(0.5); opacity: 0; }
+    50% { transform: scale(1.2); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+}
+.firework {
+    position: absolute;
+    border-radius: 50%;
+    animation: explode 1s ease-out forwards;
+}
+@keyframes explode {
+    0% { transform: scale(0); opacity: 1; }
+    100% { transform: scale(2); opacity: 0; }
+}
+@media (max-width: 768px) {
+    .tables-container { flex-direction: column; }
+    .day-navigation { justify-content: flex-start; }
+    h1 { font-size: 2.2rem; }
+    .timer-display { min-width: 60px; }
+    .start-btn, .stop-btn { margin-left: 5px; }
+    .current-task-container { padding: 20px; }
+    .current-task-container .task-label { font-size: 1rem; }
+    .current-task-container .animated-arrow { font-size: 1.5rem; }
+    .current-task-container .task-name { font-size: 2rem; }
+    .digital-stopwatch { font-size: 1.5rem; }
+}
+@media (max-width: 480px) {
+    .current-task-container .task-label { font-size: 0.8rem; }
+    .current-task-container .animated-arrow { font-size: 1.2rem; }
+    .current-task-container .task-name { font-size: 1.6rem; }
+    .digital-stopwatch { font-size: 1.2rem; min-width: 100px; padding: 8px 15px; }
+}
     </style>
 </head>
 <body>
     <div class="container">
         <header>
             <h1>Intense Revision Plan</h1>
-            <div class="date-range">September 14 - 17, 2025</div>
+            <div class="date-range">September 21 - 26, 2025</div>
         </header>
         <div class="current-task-container" id="current-task">
             <div>No task currently active</div>
@@ -370,15 +372,11 @@
             timerInterval: null
         };
 
-        // Task definitions for September 14–17, 2025
-        const TASKS = [
-            { activity: 'Revise English Grammar + Aptitude', duration: 1800000 }, // 30 minutes
-            { activity: 'Full Tier-1 Test on Testbook + Analysis', duration: 5400000 }, // 1.5 hours
-            { activity: 'Full Tier-2 Test on Testbook + Analysis', duration: 5400000 }, // 1.5 hours
-            { activity: 'Full Tier-3 Test on Testbook + Analysis', duration: 5400000 }, // 1.5 hours
-            { activity: 'Full Tier-4 Test on Testbook + Analysis', duration: 5400000 }, // 1.5 hours
-            { activity: 'Current Affairs', duration: 3600000 }, // 1 hour
-            { activity: 'Full Day Analysis TakeAway Points', duration: 1800000 } // 30 minutes
+        // Task definitions for September 21-30, 2025
+           const TASKS = [
+            { activity: 'English FRB', duration: 3600000 }, // 1 hours = 2*60*60*1000 ms
+            { activity: 'Computer', duration: 1800000 }, // 0.5 hours = 30*60*1000 ms
+            { activity: 'GS Paper-1 PYQ', duration: 14400000 } // 4 hours = 4*60*60*1000 ms
         ];
 
         // Helper to create task objects
@@ -393,11 +391,11 @@
             isPaused: false
         });
 
-        // Initialize study plan with tasks for September 14–17, 2025
+        // Initialize study plan with tasks for September 21-30, 2025
         function initializeStudyPlan() {
             studyPlan.days = [];
-            const startDate = new Date(2025, 8, 14); // September 14, 2025
-            for (let i = 0; i < 4; i++) {
+            const startDate = new Date(2025, 8, 21); // September 21, 2025
+            for (let i = 0; i < 11; i++) {
                 const dayDate = new Date(startDate);
                 dayDate.setDate(startDate.getDate() + i);
                 dayDate.setHours(0, 0, 0, 0);
