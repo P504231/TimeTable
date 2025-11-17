@@ -1,887 +1,542 @@
-<!DOCTYPE html>
-<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Study Planner & Progress Tracker</title>
+    <title>Complete Computer Awareness Notes 2025 | SSC, CCC, Banking, Railway, PSC</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-body {
-    background: linear-gradient(135deg, #81c784 0%, #2e7d32 100%);
-    color: #263238;
-    line-height: 1.6;
-    padding: 20px;
-    min-height: 100vh;
-    overflow-x: hidden;
-}
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-}
-header {
-    text-align: center;
-    margin-bottom: 30px;
-    padding: 25px;
-    background: linear-gradient(135deg, #388e3c 0%, #2e7d32 100%);
-    color: white;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(46, 125, 50, 0.15);
-}
-h1 {
-    font-size: 2.8rem;
-    margin-bottom: 15px;
-    letter-spacing: 0.5px;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-}
-.date-range {
-    font-size: 1.3rem;
-    font-weight: 500;
-    opacity: 0.9;
-}
-.current-task-container {
-    background: white;
-    padding: 30px;
-    border-radius: 15px;
-    margin-bottom: 25px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    font-weight: 500;
-    color: #2c3e50;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
-    text-align: center;
-}
-.current-task-container .task-label {
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: #FF0000;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-.current-task-container .animated-arrow {
-    font-size: 1.8rem;
-    color: #8B0000;
-    animation: pulse 1.5s infinite;
-}
-@keyframes pulse {
-    0% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.2); opacity: 0.7; }
-    100% { transform: scale(1); opacity: 1; }
-}
-.current-task-container .task-name {
-    font-size: 2.4rem;
-    font-weight: bold;
-    color: #FF0000;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
-}
-.digital-stopwatch {
-    font-family: 'Courier New', monospace;
-    font-size: 1.8rem;
-    font-weight: bold;
-    color: #1b5e20;
-    background: #c8e6c9;
-    padding: 10px 20px;
-    border-radius: 10px;
-    border: 2px solid #e9ecef;
-    min-width: 140px;
-    text-align: center;
-    animation: blink 1s step-end infinite;
-}
-@keyframes blink {
-    50% { opacity: 0.7; }
-}
-.day-navigation {
-    display: flex;
-    justify-content: center;
-    gap: 12px;
-    margin-bottom: 25px;
-    flex-wrap: wrap;
-}
-.day-btn {
-    padding: 12px 22px;
-    background: #388e3c;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-weight: 600;
-    box-shadow: 0 4px 8px rgba(46, 125, 50, 0.2);
-}
-.day-btn:hover {
-    background: #2e7d32;
-    transform: translateY(-3px);
-    box-shadow: 0 6px 12px rgba(46, 125, 50, 0.3);
-}
-.day-btn.active {
-    background: #81c784;
-    color: #1b5e20;
-    box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.15);
-}
-.tables-container {
-    display: flex;
-    gap: 25px;
-    flex-wrap: wrap;
-}
-.daily-table-container { flex: 2; min-width: 300px; }
-.overview-table-container { flex: 1; min-width: 300px; }
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 25px;
-    background: white;
-    border-radius: 15px;
-    overflow: hidden;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-}
-th, td {
-    padding: 15px 18px;
-    text-align: left;
-    border-bottom: 1px solid #e0e0e0;
-}
-th {
-    background: linear-gradient(135deg, #388e3c 0%, #2e7d32 100%);
-    color: white;
-    font-weight: 600;
-    font-size: 1.1rem;
-}
-tr:nth-child(even) { background-color: #f3fbf5; }
-tr:hover { background-color: #e8f5e9; }
-tr.completed {
-    background-color: #d0f8ce !important;
-    color: #155724;
-}
-.start-btn, .stop-btn {
-    padding: 8px 16px;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 0.9rem;
-    margin-left: 10px;
-    font-weight: 600;
-}
-.start-btn {
-    background: #388e3c;
-}
-.start-btn:hover {
-    background: #2e7d32;
-}
-.start-btn:disabled {
-    background: #cccccc;
-    cursor: not-allowed;
-}
-.stop-btn {
-    background: #d32f2f;
-}
-.stop-btn:hover {
-    background: #b71c1c;
-}
-.timer-display {
-    font-weight: bold;
-    color: #388e3c;
-    display: inline-block;
-    min-width: 80px;
-    text-align: right;
-}
-.timer-container {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-}
-.done-cell {
-    text-align: center;
-    font-size: 1.2rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-}
-.award-btn {
-    background: #81c784;
-    color: #1b5e20;
-    border: none;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1rem;
-}
-.award-btn:hover {
-    background: #388e3c;
-    color: white;
-    transform: scale(1.1);
-}
-.toggle-container {
-    display: flex;
-    justify-content: center;
-    margin: 25px 0;
-    gap: 15px;
-}
-.toggle-btn {
-    padding: 12px 25px;
-    background: #388e3c;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 8px rgba(46, 125, 50, 0.2);
-}
-.toggle-btn:hover {
-    background: #2e7d32;
-    transform: translateY(-3px);
-    box-shadow: 0 6px 12px rgba(46, 125, 50, 0.3);
-}
-.date-display {
-    margin: 10px 0;
-    font-size: 1.2rem;
-    font-weight: 500;
-    color: #2c3e50;
-}
-.progress-bar {
-    width: 100%;
-    height: 20px;
-    background: #c8e6c9;
-    border-radius: 10px;
-    overflow: hidden;
-}
-.progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #388e3c, #81c784);
-    transition: width 0.3s ease;
-}
-.celebration {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    z-index: 1000;
-    pointer-events: none;
-}
-.celebration-message {
-    font-size: 3rem;
-    font-weight: bold;
-    color: #388e3c;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-    margin-bottom: 20px;
-    animation: zoom 2s ease-out;
-}
-@keyframes zoom {
-    0% { transform: scale(0.5); opacity: 0; }
-    50% { transform: scale(1.2); opacity: 1; }
-    100% { transform: scale(1); opacity: 1; }
-}
-.firework {
-    position: absolute;
-    border-radius: 50%;
-    animation: explode 1s ease-out forwards;
-}
-@keyframes explode {
-    0% { transform: scale(0); opacity: 1; }
-    100% { transform: scale(2); opacity: 0; }
-}
-@media (max-width: 768px) {
-    .tables-container { flex-direction: column; }
-    .day-navigation { justify-content: flex-start; }
-    h1 { font-size: 2.2rem; }
-    .timer-display { min-width: 60px; }
-    .start-btn, .stop-btn { margin-left: 5px; }
-    .current-task-container { padding: 20px; }
-    .current-task-container .task-label { font-size: 1rem; }
-    .current-task-container .animated-arrow { font-size: 1.5rem; }
-    .current-task-container .task-name { font-size: 2rem; }
-    .digital-stopwatch { font-size: 1.5rem; }
-}
-@media (max-width: 480px) {
-    .current-task-container .task-label { font-size: 0.8rem; }
-    .current-task-container .animated-arrow { font-size: 1.2rem; }
-    .current-task-container .task-name { font-size: 1.6rem; }
-    .digital-stopwatch { font-size: 1.2rem; min-width: 100px; padding: 8px 15px; }
-}
+        /* CSS Variables for vibrant theming */
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3a0ca3;
+            --accent-color: #4cc9f0;
+            --success-color: #2ec4b6;
+            --warning-color: #ff9f1c;
+            --danger-color: #e71d36;
+            --purple-color: #7209b7;
+            --pink-color: #f72585;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --gray-color: #6c757d;
+            --border-radius: 12px;
+            --box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            --transition: all 0.3s ease;
+            --gradient-primary: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+            --gradient-secondary: linear-gradient(135deg, #4cc9f0 0%, #4361ee 100%);
+            --gradient-accent: linear-gradient(135deg, #f72585 0%, #7209b7 100%);
+            --gradient-success: linear-gradient(135deg, #2ec4b6 0%, #4cc9f0 100%);
+        }
+        
+        /* Base Styles */
+        * { 
+            margin:0; 
+            padding:0; 
+            box-sizing:border-box; 
+        }
+        
+        body { 
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); 
+            color: var(--dark-color); 
+            line-height:1.6; 
+            padding:20px; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 16px;
+        }
+        
+        .container { 
+            max-width:1200px; 
+            margin:0 auto; 
+        }
+        
+        /* Header Styles */
+        header { 
+            text-align:center; 
+            margin-bottom:30px; 
+            padding:40px 30px; 
+            background: var(--gradient-primary);
+            border-radius:var(--border-radius); 
+            box-shadow:var(--box-shadow);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            z-index: 1;
+        }
+        
+        h1 { 
+            color: white; 
+            margin-bottom:15px; 
+            font-size:2.8rem; 
+            font-weight: 800;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            position: relative;
+            z-index: 2;
+        }
+        
+        .subtitle { 
+            color: rgba(255,255,255,0.9); 
+            font-size:1.3rem; 
+            font-weight: 400;
+            position: relative;
+            z-index: 2;
+        }
+        
+        /* Section Styles */
+        .section { 
+            background:white; 
+            border-radius:var(--border-radius); 
+            padding:30px; 
+            margin-bottom:30px; 
+            box-shadow:var(--box-shadow); 
+            transition:var(--transition);
+            border-top: 5px solid var(--primary-color);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .section::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--gradient-accent);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.5s ease;
+        }
+        
+        .section:hover { 
+            transform:translateY(-5px); 
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+        
+        .section:hover::before {
+            transform: scaleX(1);
+        }
+        
+        h2 { 
+            color:var(--primary-color); 
+            padding-bottom:15px; 
+            margin-bottom:25px; 
+            font-size:1.9rem; 
+            cursor:pointer;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            transition: var(--transition);
+            border-bottom: 2px dashed #e9ecef;
+            position: relative;
+        }
+        
+        h2::before {
+            content: "";
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--gradient-accent);
+            border-radius: 3px;
+        }
+        
+        h2:hover {
+            color: var(--secondary-color);
+        }
+        
+        h2::after {
+            content: "▼";
+            margin-left: auto;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            color: var(--accent-color);
+        }
+        
+        .section.active h2::after {
+            transform: rotate(180deg);
+        }
+        
+        h3 { 
+            color:var(--secondary-color); 
+            margin:30px 0 18px; 
+            font-size:1.5rem; 
+            font-weight: 700;
+            padding: 10px 15px;
+            background: linear-gradient(90deg, rgba(67, 97, 238, 0.1) 0%, rgba(255,255,255,0) 100%);
+            border-left: 4px solid var(--primary-color);
+            border-radius: 0 8px 8px 0;
+        }
+        
+        h4 {
+            color: var(--purple-color);
+            margin: 25px 0 12px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            padding-left: 10px;
+            border-left: 3px solid var(--pink-color);
+        }
+        
+        p { 
+            margin-bottom:18px; 
+            line-height: 1.7;
+        }
+        
+        /* List Styles */
+        ul, ol {
+            margin-bottom: 20px;
+            padding-left: 25px;
+        }
+        
+        li {
+            margin-bottom: 10px;
+            line-height: 1.6;
+            padding-left: 5px;
+        }
+        
+        ul ul, ol ol, ul ol, ol ul {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+        
+        ul li::marker {
+            color: var(--primary-color);
+        }
+        
+        ol li::marker {
+            color: var(--pink-color);
+            font-weight: bold;
+        }
+        
+        /* Special Content Styles */
+        .highlight { 
+            background: linear-gradient(90deg, rgba(67, 97, 238, 0.1) 0%, rgba(76, 201, 240, 0.1) 100%);
+            padding:20px; 
+            border-left:5px solid var(--primary-color); 
+            margin:20px 0; 
+            border-radius:0 var(--border-radius) var(--border-radius) 0; 
+            line-height: 1.7;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        
+        .mnemonic { 
+            background: linear-gradient(90deg, rgba(255, 159, 28, 0.1) 0%, rgba(247, 37, 133, 0.1) 100%);
+            padding:20px; 
+            border-left:5px solid var(--warning-color); 
+            margin:20px 0; 
+            border-radius:0 var(--border-radius) var(--border-radius) 0; 
+            font-weight:bold;
+            line-height: 1.7;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        
+        .key-point { 
+            background: linear-gradient(90deg, rgba(46, 196, 182, 0.1) 0%, rgba(76, 201, 240, 0.1) 100%);
+            padding:18px; 
+            border-left:5px solid var(--success-color); 
+            margin:18px 0; 
+            border-radius:0 var(--border-radius) var(--border-radius) 0;
+            line-height: 1.7;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        
+        /* OSI Layers */
+        .osi-layers { 
+            display:flex; 
+            flex-direction:column; 
+            margin:30px 0; 
+            position:relative;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        
+        .layer { 
+            padding:20px; 
+            margin:0; 
+            border-radius:0; 
+            font-weight:bold; 
+            transition:var(--transition); 
+            position:relative; 
+            cursor:pointer; 
+            z-index:1;
+            display: flex;
+            align-items: center;
+            min-height: 70px;
+            font-size: 1.1rem;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .layer:hover { 
+            transform:translateX(10px); 
+            box-shadow:0 8px 20px rgba(0,0,0,0.2); 
+            z-index:10;
+        }
+        
+        .layer::after { 
+            content:attr(data-tooltip); 
+            position:absolute; 
+            bottom:-45px; 
+            left:50%; 
+            transform:translateX(-50%); 
+            background:var(--dark-color); 
+            color:white; 
+            padding:12px 18px; 
+            border-radius:8px; 
+            font-size:14px; 
+            white-space:nowrap; 
+            opacity:0; 
+            pointer-events:none; 
+            transition:var(--transition); 
+            z-index:1000; 
+            box-shadow:0 5px 15px rgba(0,0,0,0.2);
+            font-weight: normal;
+        }
+        
+        .layer:hover::after { 
+            opacity:1; 
+            transform:translateX(-50%) translateY(0);
+        }
+        
+        .layer-7 { background: linear-gradient(90deg, #e71d36 0%, #f72585 100%); color:white; }
+        .layer-6 { background: linear-gradient(90deg, #ff9f1c 0%, #e71d36 100%); color:white; }
+        .layer-5 { background: linear-gradient(90deg, #ffea00 0%, #ff9f1c 100%); color:#333; }
+        .layer-4 { background: linear-gradient(90deg, #2ec4b6 0%, #4cc9f0 100%); color:white; }
+        .layer-3 { background: linear-gradient(90deg, #4cc9f0 0%, #4361ee 100%); color:white; }
+        .layer-2 { background: linear-gradient(90deg, #4361ee 0%, #3a0ca3 100%); color:white; }
+        .layer-1 { background: linear-gradient(90deg, #7209b7 0%, #3a0ca3 100%); color:white; }
+        
+        /* Table Styles */
+        .comparison-table { 
+            width:100%; 
+            border-collapse:separate; 
+            border-spacing: 0;
+            margin:30px 0;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        
+        .comparison-table th, .comparison-table td { 
+            border: none; 
+            padding:16px; 
+            text-align:left;
+            line-height: 1.5;
+        }
+        
+        .comparison-table th { 
+            background: var(--gradient-primary);
+            color:white; 
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+        
+        .comparison-table tr:nth-child(even) { 
+            background-color:#f8f9fa; 
+        }
+        
+        .comparison-table tr:hover {
+            background: rgba(67, 97, 238, 0.05);
+        }
+        
+        .comparison-table tr:first-child th:first-child {
+            border-top-left-radius: var(--border-radius);
+        }
+        
+        .comparison-table tr:first-child th:last-child {
+            border-top-right-radius: var(--border-radius);
+        }
+        
+        .comparison-table tr:last-child td:first-child {
+            border-bottom-left-radius: var(--border-radius);
+        }
+        
+        .comparison-table tr:last-child td:last-child {
+            border-bottom-right-radius: var(--border-radius);
+        }
+        
+        /* Accordion Styles */
+        .accordion-content { 
+            display:none; 
+            padding:25px; 
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius:var(--border-radius); 
+            margin-top:20px;
+            border: 1px solid rgba(67, 97, 238, 0.1);
+            line-height: 1.7;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.03);
+        }
+        
+        .accordion-content.show { 
+            display:block; 
+            animation: fadeIn 0.4s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Timeline Styles */
+        .timeline { 
+            position:relative; 
+            padding-left:50px; 
+            margin:30px 0; 
+        }
+        
+        .timeline::before { 
+            content:''; 
+            position:absolute; 
+            left:20px; 
+            top:0; 
+            bottom:0; 
+            width:4px; 
+            background: var(--gradient-primary);
+            border-radius: 4px;
+        }
+        
+        .timeline-item { 
+            position:relative; 
+            margin-bottom:30px; 
+            padding-left:30px; 
+            line-height: 1.6;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        
+        .timeline-item::before { 
+            content:''; 
+            position:absolute; 
+            left:-42px; 
+            top:50%;
+            transform: translateY(-50%);
+            width:20px; 
+            height:20px; 
+            background: var(--gradient-accent);
+            border-radius:50%; 
+            border: 4px solid white;
+            box-shadow: 0 0 0 3px var(--primary-color);
+        }
+        
+        /* Footer Styles */
+        footer { 
+            text-align:center; 
+            margin-top:60px; 
+            padding:30px; 
+            color:white; 
+            font-size:1rem; 
+            background: var(--gradient-primary);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+        
+        /* Responsive Styles */
+        @media (max-width:768px) { 
+            body {
+                padding: 15px;
+                font-size: 15px;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            h2 {
+                font-size: 1.6rem;
+            }
+            
+            h3 {
+                font-size: 1.4rem;
+            }
+            
+            .section {
+                padding: 25px 20px;
+            }
+            
+            .comparison-table {
+                font-size: 14px;
+            }
+            
+            .comparison-table th, .comparison-table td {
+                padding: 12px 10px;
+            }
+            
+            .layer::after { 
+                position:fixed; 
+                bottom:auto; 
+                top:50%; 
+                left:10px; 
+                transform:translateY(-50%); 
+                max-width:200px; 
+                white-space:normal;
+                font-size: 13px;
+            }
+            
+            .timeline {
+                padding-left: 40px;
+            }
+            
+            .timeline-item::before {
+                left: -35px;
+            }
+        }
+        
+        @media (max-width:480px) {
+            h1 {
+                font-size: 1.9rem;
+            }
+            
+            h2 {
+                font-size: 1.4rem;
+            }
+            
+            .section {
+                padding: 20px 15px;
+            }
+            
+            .comparison-table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+            
+            header {
+                padding: 30px 20px;
+            }
+        }
+        
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+                color: black;
+                padding: 0;
+            }
+            
+            .section {
+                box-shadow: none;
+                border: 1px solid #ddd;
+                page-break-inside: avoid;
+            }
+            
+            .accordion-content {
+                display: block !important;
+            }
+            
+            header, footer {
+                background: #f0f0f0 !important;
+                color: black !important;
+            }
+        }
     </style>
 </head>
-<body>
-    <div class="container">
-        <header>
-            <h1>Intense Revision Plan</h1>
-            <div class="date-range">September 21 - 26, 2025</div>
-        </header>
-        <div class="current-task-container" id="current-task">
-            <div>No task currently active</div>
-        </div>
-        <div class="day-navigation" id="day-navigation"></div>
-        <div class="toggle-container">
-            <button class="toggle-btn" id="toggle-view">Show Overall Performance</button>
-        </div>
-        <div class="tables-container">
-            <div class="daily-table-container">
-                <h2>Daily Study Schedule - <span id="current-day">Day 1</span></h2>
-                <div class="date-display" id="current-date">September 14, 2025</div>
-                <table id="daily-table">
-                    <thead>
-                        <tr>
-                            <th>Activity</th>
-                            <th>Timer</th>
-                            <th>Done</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-            <div class="overview-table-container" id="overview-container" style="display: none;">
-                <h2>Day Overview</h2>
-                <table id="overview-table">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Completed</th>
-                            <th>Progress</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-    <script>
-        const studyPlan = {
-            days: [],
-            currentDay: 1,
-            showOverview: false,
-            activeTaskIndex: null,
-            activeTaskDay: null,
-            timerInterval: null
-        };
-
-        // Task definitions for September 21-30, 2025
-           const TASKS = [
-            { activity: 'English FRB', duration: 3600000 }, // 1 hours = 2*60*60*1000 ms
-            { activity: 'Computer', duration: 1800000 }, // 0.5 hours = 30*60*1000 ms
-            { activity: 'GS Paper-1 PYQ', duration: 14400000 } // 4 hours = 4*60*60*1000 ms
-        ];
-
-        // Helper to create task objects
-        const createTask = ({ activity, duration }) => ({
-            activity,
-            duration,
-            done: false,
-            startTime: null,
-            elapsedTime: 0,
-            remainingTime: duration,
-            timerInterval: null,
-            isPaused: false
-        });
-
-        // Initialize study plan with tasks for September 21-30, 2025
-        function initializeStudyPlan() {
-            studyPlan.days = [];
-            const startDate = new Date(2025, 8, 21); // September 21, 2025
-            for (let i = 0; i < 11; i++) {
-                const dayDate = new Date(startDate);
-                dayDate.setDate(startDate.getDate() + i);
-                dayDate.setHours(0, 0, 0, 0);
-                const formattedDate = formatDate(dayDate);
-                const tasks = TASKS.map(createTask);
-
-                studyPlan.days.push({
-                    dayNumber: i + 1,
-                    date: dayDate,
-                    formattedDate,
-                    tasks
-                });
-            }
-        }
-
-        // Format date to "Month Day, Year"
-        function formatDate(date) {
-            if (!(date instanceof Date) || isNaN(date)) {
-                console.error('Invalid date:', date);
-                return 'Unknown Date';
-            }
-            const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-            return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
-        }
-
-        // Format time to HH:MM:SS
-        function formatTime(ms) {
-            if (ms <= 0) return '00:00:00';
-            const totalSeconds = Math.floor(ms / 1000);
-            const h = Math.floor(totalSeconds / 3600);
-            const m = Math.floor((totalSeconds % 3600) / 60);
-            const s = totalSeconds % 60;
-            return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-        }
-
-        // Format time to MM:SS
-        function formatTimeShort(ms) {
-            if (ms <= 0) return '00:00';
-            const totalSeconds = Math.floor(ms / 1000);
-            const m = Math.floor(totalSeconds / 60);
-            const s = totalSeconds % 60;
-            return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-        }
-
-        // Check if a date is today
-        function isToday(dayDate) {
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            if (!(dayDate instanceof Date) || isNaN(dayDate)) return false;
-            const checkDate = new Date(dayDate);
-            checkDate.setHours(0, 0, 0, 0);
-            return checkDate.getTime() === today.getTime();
-        }
-
-        // Update current task display
-        function updateCurrentTaskDisplay() {
-            const currentTaskDiv = document.getElementById('current-task');
-            if (studyPlan.activeTaskIndex === null || studyPlan.activeTaskDay === null) {
-                currentTaskDiv.innerHTML = '<div>No task currently active</div>';
-                if (studyPlan.timerInterval) {
-                    cancelAnimationFrame(studyPlan.timerInterval);
-                    studyPlan.timerInterval = null;
-                }
-                return;
-            }
-
-            const day = studyPlan.days[studyPlan.activeTaskDay - 1];
-            const task = day.tasks[studyPlan.activeTaskIndex];
-            const remaining = task.remainingTime;
-
-            const update = () => {
-                if (!task.isPaused) {
-                    const updatedRemaining = task.duration - (task.elapsedTime + (Date.now() - task.startTime));
-                    if (updatedRemaining <= 0) {
-                        completeTask(studyPlan.activeTaskIndex);
-                        return;
-                    }
-                    task.remainingTime = updatedRemaining;
-                }
-                currentTaskDiv.innerHTML = `
-                    <div>
-                        <div><span class="task-label">Currently Studying</span></div>
-                        <div><span class="animated-arrow">➔</span><span class="task-name">${task.activity}</span></div>
-                        <div><span class="digital-stopwatch">${formatTime(task.remainingTime)}</span></div>
-                    </div>
-                `;
-                saveToLocalStorage();
-                if (studyPlan.activeTaskIndex !== null && !task.isPaused) {
-                    studyPlan.timerInterval = requestAnimationFrame(update);
-                }
-            };
-
-            if (!studyPlan.timerInterval && !task.isPaused) {
-                studyPlan.timerInterval = requestAnimationFrame(update);
-            } else if (task.isPaused) {
-                update(); // Update display without starting animation
-            }
-        }
-
-        // Generate day navigation buttons
-        function generateDayNavigation() {
-            const nav = document.getElementById('day-navigation');
-            nav.innerHTML = studyPlan.days.map((day, index) => `
-                <button class="day-btn ${studyPlan.currentDay === index + 1 ? 'active' : ''}" data-day="${index + 1}">
-                    ${day.formattedDate.split(' ')[0]} ${day.formattedDate.split(' ')[1].replace(',', '')}
-                </button>
-            `).join('');
-            nav.querySelectorAll('.day-btn').forEach(btn =>
-                btn.addEventListener('click', () => switchDay(parseInt(btn.dataset.day)))
-            );
-        }
-
-        // Switch to a specific day
-        function switchDay(day) {
-            try {
-                studyPlan.currentDay = day;
-                document.querySelectorAll('.day-btn').forEach(btn =>
-                    btn.classList.toggle('active', parseInt(btn.dataset.day) === day)
-                );
-                document.getElementById('current-day').textContent = `Day ${day}`;
-                document.getElementById('current-date').textContent = studyPlan.days[day - 1]?.formattedDate || 'Unknown Date';
-                renderDailyTable();
-                updateCurrentTaskDisplay();
-                saveToLocalStorage();
-            } catch (error) {
-                console.error('Error in switchDay:', error);
-            }
-        }
-
-        // Render daily task table
-        function renderDailyTable() {
-            try {
-                const tbody = document.querySelector('#daily-table tbody');
-                const day = studyPlan.days[studyPlan.currentDay - 1];
-                if (!day || !day.tasks) {
-                    tbody.innerHTML = '<tr><td colspan="3">No tasks available</td></tr>';
-                    return;
-                }
-                const isCurrentDay = isToday(day.date);
-                tbody.innerHTML = day.tasks.map((task, index) => {
-                    const isRunning = studyPlan.activeTaskIndex === index && studyPlan.activeTaskDay === studyPlan.currentDay && !task.isPaused;
-                    return `
-                        <tr class="${task.done ? 'completed' : ''}">
-                            <td>${task.activity}</td>
-                            <td class="timer-cell" data-index="${index}">
-                                ${task.done ? 'Completed' : isCurrentDay ? `
-                                    <div class="timer-container">
-                                        <span class="timer-display" data-index="${index}">${formatTimeShort(task.remainingTime)}</span>
-                                        ${isRunning ? 
-                                            `<button class="stop-btn" data-index="${index}">Stop</button>` :
-                                            `<button class="start-btn" data-index="${index}" ${studyPlan.activeTaskIndex !== null && !isRunning && studyPlan.activeTaskDay !== studyPlan.currentDay ? 'disabled' : ''}>${task.isPaused ? 'Resume' : 'Start'}</button>`}
-                                    </div>
-                                ` : 'Not Started'}
-                            </td>
-                            <td class="done-cell">
-                                ${task.done ? `✔️ <button class="award-btn" data-index="${index}" title="Celebrate completion">🏆</button>` : ''}
-                            </td>
-                        </tr>
-                    `;
-                }).join('');
-
-                tbody.querySelectorAll('.start-btn').forEach(btn =>
-                    btn.addEventListener('click', () => handleStart(parseInt(btn.dataset.index)))
-                );
-                tbody.querySelectorAll('.stop-btn').forEach(btn =>
-                    btn.addEventListener('click', () => handleStop(parseInt(btn.dataset.index)))
-                );
-                tbody.querySelectorAll('.award-btn').forEach(btn =>
-                    btn.addEventListener('click', () => celebrateCompletion())
-                );
-            } catch (error) {
-                console.error('Error in renderDailyTable:', error);
-                document.querySelector('#daily-table tbody').innerHTML = '<tr><td colspan="3">Error loading tasks</td></tr>';
-            }
-        }
-
-        // Start a task
-        function handleStart(index) {
-            try {
-                if (studyPlan.activeTaskIndex !== null && studyPlan.activeTaskDay !== studyPlan.currentDay) return;
-                const day = studyPlan.days[studyPlan.currentDay - 1];
-                const task = day.tasks[index];
-                if (task.done) return;
-                if (!task.startTime) {
-                    task.startTime = Date.now();
-                    task.remainingTime = task.duration;
-                } else if (task.isPaused) {
-                    task.startTime = Date.now();
-                    task.isPaused = false;
-                }
-                studyPlan.activeTaskIndex = index;
-                studyPlan.activeTaskDay = studyPlan.currentDay;
-                startTimer(index);
-                renderDailyTable();
-                updateCurrentTaskDisplay();
-                saveToLocalStorage();
-            } catch (error) {
-                console.error('Error in handleStart:', error);
-            }
-        }
-
-        // Stop a task
-        function handleStop(index) {
-            try {
-                const day = studyPlan.days[studyPlan.activeTaskDay - 1];
-                const task = day.tasks[index];
-                if (task.timerInterval) {
-                    clearInterval(task.timerInterval);
-                    task.timerInterval = null;
-                }
-                task.elapsedTime += Date.now() - task.startTime;
-                task.remainingTime = task.duration - task.elapsedTime;
-                task.isPaused = true;
-                if (task.remainingTime <= 0) {
-                    completeTask(index);
-                } else {
-                    studyPlan.timerInterval = null;
-                    renderDailyTable();
-                    updateCurrentTaskDisplay();
-                    saveToLocalStorage();
-                }
-            } catch (error) {
-                console.error('Error in handleStop:', error);
-            }
-        }
-
-        // Start task timer
-        function startTimer(index) {
-            try {
-                const day = studyPlan.days[studyPlan.activeTaskDay - 1];
-                const task = day.tasks[index];
-                if (task.timerInterval) clearInterval(task.timerInterval);
-                task.timerInterval = setInterval(() => {
-                    const elapsed = task.elapsedTime + (Date.now() - task.startTime);
-                    const remaining = task.duration - elapsed;
-                    if (remaining <= 0) {
-                        clearInterval(task.timerInterval);
-                        task.timerInterval = null;
-                        completeTask(index);
-                    } else {
-                        task.remainingTime = remaining;
-                        updateTimerUI(index, remaining);
-                        saveToLocalStorage();
-                    }
-                }, 1000);
-            } catch (error) {
-                console.error('Error in startTimer:', error);
-            }
-        }
-
-        // Update timer UI
-        function updateTimerUI(index, remaining) {
-            try {
-                if (studyPlan.currentDay === studyPlan.activeTaskDay) {
-                    const display = document.querySelector(`.timer-display[data-index="${index}"]`);
-                    if (display) display.textContent = formatTimeShort(remaining);
-                }
-            } catch (error) {
-                console.error('Error in updateTimerUI:', error);
-            }
-        }
-
-        // Complete a task
-        function completeTask(index) {
-            try {
-                const day = studyPlan.days[studyPlan.activeTaskDay - 1];
-                const task = day.tasks[index];
-                if (task.timerInterval) {
-                    clearInterval(task.timerInterval);
-                    task.timerInterval = null;
-                }
-                task.done = true;
-                task.startTime = null;
-                task.elapsedTime = 0;
-                task.remainingTime = task.duration;
-                task.isPaused = false;
-                studyPlan.activeTaskIndex = null;
-                studyPlan.activeTaskDay = null;
-                if (studyPlan.timerInterval) {
-                    cancelAnimationFrame(studyPlan.timerInterval);
-                    studyPlan.timerInterval = null;
-                }
-                renderDailyTable();
-                updateCurrentTaskDisplay();
-                saveToLocalStorage();
-            } catch (error) {
-                console.error('Error in completeTask:', error);
-            }
-        }
-
-        // Show celebration animation
-        function celebrateCompletion() {
-            const celebration = document.createElement('div');
-            celebration.className = 'celebration';
-            celebration.innerHTML = '<div class="celebration-message">Well Done 👏</div>';
-            document.body.appendChild(celebration);
-
-            for (let i = 0; i < 50; i++) {
-                setTimeout(() => {
-                    const firework = document.createElement('div');
-                    firework.className = 'firework';
-                    firework.style.left = Math.random() * 100 + 'vw';
-                    firework.style.top = Math.random() * 100 + 'vh';
-                    firework.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
-                    firework.style.width = (Math.random() * 20 + 10) + 'px';
-                    firework.style.height = firework.style.width;
-                    celebration.appendChild(firework);
-                    setTimeout(() => firework.remove(), 1000);
-                }, i * 50);
-            }
-
-            setTimeout(() => celebration.remove(), 2000);
-        }
-
-        // Render overview table
-        function renderOverviewTable() {
-            try {
-                const tbody = document.querySelector('#overview-table tbody');
-                tbody.innerHTML = studyPlan.days.map(day => {
-                    const completed = day.tasks.filter(t => t.done).length;
-                    const total = day.tasks.length;
-                    const percentage = Math.round((completed / total) * 100);
-                    return `
-                        <tr>
-                            <td>${day.formattedDate}</td>
-                            <td>${completed}/${total}</td>
-                            <td><div class="progress-bar"><div class="progress-fill" style="width:${percentage}%"></div></div></td>
-                        </tr>
-                    `;
-                }).join('');
-            } catch (error) {
-                console.error('Error in renderOverviewTable:', error);
-            }
-        }
-
-        // Toggle between daily and overview views
-        function toggleView() {
-            try {
-                studyPlan.showOverview = !studyPlan.showOverview;
-                document.querySelector('.daily-table-container').style.display = studyPlan.showOverview ? 'none' : 'block';
-                document.getElementById('overview-container').style.display = studyPlan.showOverview ? 'block' : 'none';
-                document.getElementById('toggle-view').textContent = studyPlan.showOverview ? 'Show Daily Schedule' : 'Show Overall Performance';
-                if (studyPlan.showOverview) renderOverviewTable();
-                saveToLocalStorage();
-            } catch (error) {
-                console.error('Error in toggleView:', error);
-            }
-        }
-
-        // Save study plan to local storage
-        function saveToLocalStorage() {
-            try {
-                const serializablePlan = {
-                    ...studyPlan,
-                    timerInterval: null,
-                    days: studyPlan.days.map(day => ({
-                        ...day,
-                        date: day.date.toISOString(),
-                        tasks: day.tasks.map(task => ({
-                            ...task,
-                            startTime: task.startTime ? task.startTime.toISOString() : null,
-                            timerInterval: null
-                        }))
-                    }))
-                };
-                localStorage.setItem('studyPlan', JSON.stringify(serializablePlan));
-            } catch (error) {
-                console.error('Error in saveToLocalStorage:', error);
-            }
-        }
-
-        // Load study plan from local storage with improved validation
-        function loadFromLocalStorage() {
-            try {
-                const savedData = localStorage.getItem('studyPlan');
-                if (!savedData) {
-                    console.log('No localStorage data found, initializing new study plan');
-                    initializeStudyPlan();
-                    return;
-                }
-
-                const parsedData = JSON.parse(savedData);
-                const expectedStartDate = new Date(2025, 8, 14);
-                expectedStartDate.setHours(0, 0, 0, 0);
-
-                // Validate structure and date range
-                if (!parsedData.days) {
-                    console.warn('Invalid localStorage: Missing days array');
-                    localStorage.removeItem('studyPlan');
-                    initializeStudyPlan();
-                    return;
-                }
-                if (parsedData.days.length !== 4) {
-                    console.warn(`Invalid localStorage: Expected 4 days, found ${parsedData.days.length}`);
-                    localStorage.removeItem('studyPlan');
-                    initializeStudyPlan();
-                    return;
-                }
-                if (!parsedData.days[0].date) {
-                    console.warn('Invalid localStorage: Missing date for first day');
-                    localStorage.removeItem('studyPlan');
-                    initializeStudyPlan();
-                    return;
-                }
-
-                const firstDayDate = new Date(parsedData.days[0].date);
-                firstDayDate.setHours(0, 0, 0, 0);
-                if (firstDayDate.getTime() !== expectedStartDate.getTime()) {
-                    console.warn(`Invalid localStorage: Expected start date September 14, 2025, found ${formatDate(firstDayDate)}`);
-                    localStorage.removeItem('studyPlan');
-                    initializeStudyPlan();
-                    return;
-                }
-
-                // Validate task structure for each day
-                const expectedTaskCount = TASKS.length;
-                const expectedTaskNames = TASKS.map(t => t.activity);
-                for (let i = 0; i < parsedData.days.length; i++) {
-                    const day = parsedData.days[i];
-                    if (!day.tasks || day.tasks.length !== expectedTaskCount) {
-                        console.warn(`Invalid localStorage: Day ${i + 1} has ${day.tasks ? day.tasks.length : 0} tasks, expected ${expectedTaskCount}`);
-                        localStorage.removeItem('studyPlan');
-                        initializeStudyPlan();
-                        return;
-                    }
-                    const taskNames = day.tasks.map(t => t.activity);
-                    if (!expectedTaskNames.every((name, idx) => name === taskNames[idx])) {
-                        console.warn(`Invalid localStorage: Day ${i + 1} tasks do not match expected activities`);
-                        localStorage.removeItem('studyPlan');
-                        initializeStudyPlan();
-                        return;
-                    }
-                }
-
-                // Data is valid, load it
-                studyPlan.days = parsedData.days.map(day => ({
-                    ...day,
-                    date: new Date(day.date),
-                    tasks: day.tasks.map(task => ({
-                        ...task,
-                        startTime: task.startTime ? new Date(task.startTime) : null,
-                        remainingTime: task.remainingTime || task.duration,
-                        timerInterval: null
-                    }))
-                }));
-                studyPlan.currentDay = parsedData.currentDay || 1;
-                studyPlan.showOverview = parsedData.showOverview || false;
-                studyPlan.activeTaskIndex = parsedData.activeTaskIndex;
-                studyPlan.activeTaskDay = parsedData.activeTaskDay;
-
-                // Validate and resume active task
-                if (studyPlan.activeTaskIndex !== null && studyPlan.activeTaskDay !== null) {
-                    const task = studyPlan.days[studyPlan.activeTaskDay - 1]?.tasks[studyPlan.activeTaskIndex];
-                    if (task && task.startTime && task.remainingTime > 0 && !task.done && !task.isPaused) {
-                        startTimer(studyPlan.activeTaskIndex);
-                    } else {
-                        console.warn('Invalid active task in localStorage, clearing active task');
-                        studyPlan.activeTaskIndex = null;
-                        studyPlan.activeTaskDay = null;
-                    }
-                }
-
-                console.log('Successfully loaded study plan from localStorage');
-            } catch (error) {
-                console.error('Error in loadFromLocalStorage:', error.message, error.stack);
-                localStorage.removeItem('studyPlan');
-                initializeStudyPlan();
-            }
-        }
-
-        // Initialize the app
-        function initApp() {
-            try {
-                loadFromLocalStorage();
-                generateDayNavigation();
-                switchDay(studyPlan.currentDay);
-                if (studyPlan.showOverview) toggleView();
-                document.getElementById('toggle-view').addEventListener('click', toggleView);
-                updateCurrentTaskDisplay();
-            } catch (error) {
-                console.error('Error in initApp:', error.message, error.stack);
-                document.querySelector('#daily-table tbody').innerHTML = '<tr><td colspan="3">Error initializing app</td></tr>';
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', initApp);
-    </script>
-</body>
-</html>
