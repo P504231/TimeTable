@@ -75,7 +75,6 @@
             outline: none;
             transition: var(--transition);
         }
-        .search-box:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(67,97,238,0.15); }
         button {
             padding: 14px 28px;
             background: var(--gradient-primary);
@@ -182,7 +181,6 @@
 
         @media (max-width: 768px) {
             h1 { font-size: 2.5rem; }
-            .search-box { width: 100%; }
             .controls { flex-direction: column; padding: 15px; }
             h2 { font-size: 1.7rem; padding: 22px 24px; }
             .accordion-content { padding: 25px 20px; }
@@ -197,7 +195,6 @@
         </header>
 
         <div class="controls">
-            <input type="text" id="searchInput" class="search-box" placeholder="🔍 Search any topic instantly...">
             <button onclick="expandAll()">Expand All</button>
             <button onclick="collapseAll()">Collapse All</button>
         </div>
@@ -1357,25 +1354,6 @@
                 sec.querySelector('.accordion-content').classList.remove('show');
             });
         }
-
-        // Live Search
-        document.getElementById('searchInput').addEventListener('input', function(e) {
-            const term = e.target.value.toLowerCase().trim();
-            document.querySelectorAll('.section').forEach(section => {
-                const text = section.textContent.toLowerCase();
-                const h2 = section.querySelector('h2');
-                if (term === '') {
-                    section.style.display = 'block';
-                    h2.innerHTML = h2.textContent;
-                } else if (text.includes(term)) {
-                    section.style.display = 'block';
-                    const regex = new RegExp(term, 'gi');
-                    h2.innerHTML = h2.textContent.replace(regex, match => `<span class="highlight-text">${match}</span>`);
-                } else {
-                    section.style.display = 'none';
-                }
-            });
-        });
     </script>
 </body>
 </html>
